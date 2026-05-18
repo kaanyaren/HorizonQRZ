@@ -15,4 +15,13 @@ final qrzLogbookServiceProvider = Provider<QrzLogbookService>((ref) {
   return QrzLogbookService();
 });
 
-final authStateProvider = StateProvider<bool>((ref) => false);
+class AuthNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void setAuthenticated(bool value) {
+    state = value;
+  }
+}
+
+final authStateProvider = NotifierProvider<AuthNotifier, bool>(AuthNotifier.new);

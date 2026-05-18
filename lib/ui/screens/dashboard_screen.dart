@@ -61,7 +61,38 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ],
       ),
       body: FutureBuilder<Map<String, String>>(
-...
+        future: _fetchStatus(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          final data = snapshot.data!;
+          final qsoCount = data['qso_count'] ?? '0';
+          final dxccCount = data['dxcc_count'] ?? '0';
+          final confirmedCount = data['confirmed_count'] ?? '0';
+
+          return RefreshIndicator(
+            onRefresh: () async {
+              setState(() {});
+            },
+            child: ListView(
+              padding: const EdgeInsets.all(16.0),
+              children: [
+                _buildStatCard(context, 'Total QSOs', qsoCount, Icons.history),
+                const SizedBox(height: 16),
+                _buildStatCard(context, 'DXCC Entities', dxccCount, Icons.public),
+                const SizedBox(height: 16),
+                _buildStatCard(context, 'Confirmed', confirmedCount, Icons.check_circle),
+                const SizedBox(height: 32),
+                const Text(
+                  'Awards Progress',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
                 _buildAwardTile('DX Century Club', dxccCount, '100'),
                 _buildAwardTile('Worked All States', '0', '50'),
                 if (_bandStats != null) ...[
@@ -89,7 +120,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       ),
     );
   }
-...
 
   Widget _buildStatCard(BuildContext context, String label, String value, IconData icon) {
     return Card(

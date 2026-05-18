@@ -1,5 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:drift/drift.dart';
 import '../database/app_database.dart';
 import 'app_providers.dart';
 
@@ -28,13 +29,13 @@ class SyncService {
     
     // Get API Key from settings
     final settings = await (db.select(db.appSettings)..limit(1)).getSingleOrNull();
-    if (settings?.logbookApiKey == null) return;
+    if (settings == null || settings.logbookApiKey == null) return;
 
     final pendingQsos = await (db.select(db.qsos)..where((t) => t.syncStatus.equals('pending'))).get();
 
     for (final qso in pendingQsos) {
       try {
-        final adif = qso.rawAdif ?? _convertToAdif(qso, settings!.qrzUsername!);
+        final adif = qso.rawAdif ?? _convertToAdif(qso, settings.qrzUsername ?? '');
         final result = await logbookService.insertQso(settings.logbookApiKey!, adif);
 
         if (result['RESULT'] == 'OK') {

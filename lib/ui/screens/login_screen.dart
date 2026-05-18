@@ -45,7 +45,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
       );
 
-      ref.read(authStateProvider.notifier).state = true;
+      ref.read(authStateProvider.notifier).setAuthenticated(true);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
