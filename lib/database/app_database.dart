@@ -35,6 +35,8 @@ class Qsos extends Table {
   TextColumn get txPwr => text().nullable()();
   TextColumn get mySig => text().nullable()();
   TextColumn get sig => text().nullable()();
+  TextColumn get state => text().nullable()();
+  TextColumn get cqz => text().nullable()();
 }
 
 class AppSettings extends Table {
@@ -63,7 +65,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration {
@@ -105,6 +107,12 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 6) {
           await m.createTable(syncLogs);
+        }
+        if (from < 7) {
+          try {
+            await m.addColumn(qsos, qsos.state as GeneratedColumn<Object>);
+            await m.addColumn(qsos, qsos.cqz as GeneratedColumn<Object>);
+          } catch (_) {}
         }
       },
       beforeOpen: (details) async {

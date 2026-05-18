@@ -248,6 +248,24 @@ class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
+  @override
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
+    'state',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _cqzMeta = const VerificationMeta('cqz');
+  @override
+  late final GeneratedColumn<String> cqz = GeneratedColumn<String>(
+    'cqz',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -273,6 +291,8 @@ class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
     txPwr,
     mySig,
     sig,
+    state,
+    cqz,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -429,6 +449,18 @@ class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
         sig.isAcceptableOrUnknown(data['sig']!, _sigMeta),
       );
     }
+    if (data.containsKey('state')) {
+      context.handle(
+        _stateMeta,
+        state.isAcceptableOrUnknown(data['state']!, _stateMeta),
+      );
+    }
+    if (data.containsKey('cqz')) {
+      context.handle(
+        _cqzMeta,
+        cqz.isAcceptableOrUnknown(data['cqz']!, _cqzMeta),
+      );
+    }
     return context;
   }
 
@@ -530,6 +562,14 @@ class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
         DriftSqlType.string,
         data['${effectivePrefix}sig'],
       ),
+      state: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}state'],
+      ),
+      cqz: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cqz'],
+      ),
     );
   }
 
@@ -563,6 +603,8 @@ class Qso extends DataClass implements Insertable<Qso> {
   final String? txPwr;
   final String? mySig;
   final String? sig;
+  final String? state;
+  final String? cqz;
   const Qso({
     required this.id,
     this.qrzLogid,
@@ -587,6 +629,8 @@ class Qso extends DataClass implements Insertable<Qso> {
     this.txPwr,
     this.mySig,
     this.sig,
+    this.state,
+    this.cqz,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -648,6 +692,12 @@ class Qso extends DataClass implements Insertable<Qso> {
     if (!nullToAbsent || sig != null) {
       map['sig'] = Variable<String>(sig);
     }
+    if (!nullToAbsent || state != null) {
+      map['state'] = Variable<String>(state);
+    }
+    if (!nullToAbsent || cqz != null) {
+      map['cqz'] = Variable<String>(cqz);
+    }
     return map;
   }
 
@@ -698,6 +748,10 @@ class Qso extends DataClass implements Insertable<Qso> {
           ? const Value.absent()
           : Value(mySig),
       sig: sig == null && nullToAbsent ? const Value.absent() : Value(sig),
+      state: state == null && nullToAbsent
+          ? const Value.absent()
+          : Value(state),
+      cqz: cqz == null && nullToAbsent ? const Value.absent() : Value(cqz),
     );
   }
 
@@ -730,6 +784,8 @@ class Qso extends DataClass implements Insertable<Qso> {
       txPwr: serializer.fromJson<String?>(json['txPwr']),
       mySig: serializer.fromJson<String?>(json['mySig']),
       sig: serializer.fromJson<String?>(json['sig']),
+      state: serializer.fromJson<String?>(json['state']),
+      cqz: serializer.fromJson<String?>(json['cqz']),
     );
   }
   @override
@@ -759,6 +815,8 @@ class Qso extends DataClass implements Insertable<Qso> {
       'txPwr': serializer.toJson<String?>(txPwr),
       'mySig': serializer.toJson<String?>(mySig),
       'sig': serializer.toJson<String?>(sig),
+      'state': serializer.toJson<String?>(state),
+      'cqz': serializer.toJson<String?>(cqz),
     };
   }
 
@@ -786,6 +844,8 @@ class Qso extends DataClass implements Insertable<Qso> {
     Value<String?> txPwr = const Value.absent(),
     Value<String?> mySig = const Value.absent(),
     Value<String?> sig = const Value.absent(),
+    Value<String?> state = const Value.absent(),
+    Value<String?> cqz = const Value.absent(),
   }) => Qso(
     id: id ?? this.id,
     qrzLogid: qrzLogid.present ? qrzLogid.value : this.qrzLogid,
@@ -810,6 +870,8 @@ class Qso extends DataClass implements Insertable<Qso> {
     txPwr: txPwr.present ? txPwr.value : this.txPwr,
     mySig: mySig.present ? mySig.value : this.mySig,
     sig: sig.present ? sig.value : this.sig,
+    state: state.present ? state.value : this.state,
+    cqz: cqz.present ? cqz.value : this.cqz,
   );
   Qso copyWithCompanion(QsosCompanion data) {
     return Qso(
@@ -840,6 +902,8 @@ class Qso extends DataClass implements Insertable<Qso> {
       txPwr: data.txPwr.present ? data.txPwr.value : this.txPwr,
       mySig: data.mySig.present ? data.mySig.value : this.mySig,
       sig: data.sig.present ? data.sig.value : this.sig,
+      state: data.state.present ? data.state.value : this.state,
+      cqz: data.cqz.present ? data.cqz.value : this.cqz,
     );
   }
 
@@ -868,7 +932,9 @@ class Qso extends DataClass implements Insertable<Qso> {
           ..write('satName: $satName, ')
           ..write('txPwr: $txPwr, ')
           ..write('mySig: $mySig, ')
-          ..write('sig: $sig')
+          ..write('sig: $sig, ')
+          ..write('state: $state, ')
+          ..write('cqz: $cqz')
           ..write(')'))
         .toString();
   }
@@ -898,6 +964,8 @@ class Qso extends DataClass implements Insertable<Qso> {
     txPwr,
     mySig,
     sig,
+    state,
+    cqz,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -925,7 +993,9 @@ class Qso extends DataClass implements Insertable<Qso> {
           other.satName == this.satName &&
           other.txPwr == this.txPwr &&
           other.mySig == this.mySig &&
-          other.sig == this.sig);
+          other.sig == this.sig &&
+          other.state == this.state &&
+          other.cqz == this.cqz);
 }
 
 class QsosCompanion extends UpdateCompanion<Qso> {
@@ -952,6 +1022,8 @@ class QsosCompanion extends UpdateCompanion<Qso> {
   final Value<String?> txPwr;
   final Value<String?> mySig;
   final Value<String?> sig;
+  final Value<String?> state;
+  final Value<String?> cqz;
   const QsosCompanion({
     this.id = const Value.absent(),
     this.qrzLogid = const Value.absent(),
@@ -976,6 +1048,8 @@ class QsosCompanion extends UpdateCompanion<Qso> {
     this.txPwr = const Value.absent(),
     this.mySig = const Value.absent(),
     this.sig = const Value.absent(),
+    this.state = const Value.absent(),
+    this.cqz = const Value.absent(),
   });
   QsosCompanion.insert({
     this.id = const Value.absent(),
@@ -1001,6 +1075,8 @@ class QsosCompanion extends UpdateCompanion<Qso> {
     this.txPwr = const Value.absent(),
     this.mySig = const Value.absent(),
     this.sig = const Value.absent(),
+    this.state = const Value.absent(),
+    this.cqz = const Value.absent(),
   }) : callsign = Value(callsign),
        qsoDate = Value(qsoDate),
        band = Value(band),
@@ -1029,6 +1105,8 @@ class QsosCompanion extends UpdateCompanion<Qso> {
     Expression<String>? txPwr,
     Expression<String>? mySig,
     Expression<String>? sig,
+    Expression<String>? state,
+    Expression<String>? cqz,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1054,6 +1132,8 @@ class QsosCompanion extends UpdateCompanion<Qso> {
       if (txPwr != null) 'tx_pwr': txPwr,
       if (mySig != null) 'my_sig': mySig,
       if (sig != null) 'sig': sig,
+      if (state != null) 'state': state,
+      if (cqz != null) 'cqz': cqz,
     });
   }
 
@@ -1081,6 +1161,8 @@ class QsosCompanion extends UpdateCompanion<Qso> {
     Value<String?>? txPwr,
     Value<String?>? mySig,
     Value<String?>? sig,
+    Value<String?>? state,
+    Value<String?>? cqz,
   }) {
     return QsosCompanion(
       id: id ?? this.id,
@@ -1106,6 +1188,8 @@ class QsosCompanion extends UpdateCompanion<Qso> {
       txPwr: txPwr ?? this.txPwr,
       mySig: mySig ?? this.mySig,
       sig: sig ?? this.sig,
+      state: state ?? this.state,
+      cqz: cqz ?? this.cqz,
     );
   }
 
@@ -1181,6 +1265,12 @@ class QsosCompanion extends UpdateCompanion<Qso> {
     if (sig.present) {
       map['sig'] = Variable<String>(sig.value);
     }
+    if (state.present) {
+      map['state'] = Variable<String>(state.value);
+    }
+    if (cqz.present) {
+      map['cqz'] = Variable<String>(cqz.value);
+    }
     return map;
   }
 
@@ -1209,7 +1299,9 @@ class QsosCompanion extends UpdateCompanion<Qso> {
           ..write('satName: $satName, ')
           ..write('txPwr: $txPwr, ')
           ..write('mySig: $mySig, ')
-          ..write('sig: $sig')
+          ..write('sig: $sig, ')
+          ..write('state: $state, ')
+          ..write('cqz: $cqz')
           ..write(')'))
         .toString();
   }
@@ -2151,6 +2243,8 @@ typedef $$QsosTableCreateCompanionBuilder =
       Value<String?> txPwr,
       Value<String?> mySig,
       Value<String?> sig,
+      Value<String?> state,
+      Value<String?> cqz,
     });
 typedef $$QsosTableUpdateCompanionBuilder =
     QsosCompanion Function({
@@ -2177,6 +2271,8 @@ typedef $$QsosTableUpdateCompanionBuilder =
       Value<String?> txPwr,
       Value<String?> mySig,
       Value<String?> sig,
+      Value<String?> state,
+      Value<String?> cqz,
     });
 
 class $$QsosTableFilterComposer extends Composer<_$AppDatabase, $QsosTable> {
@@ -2299,6 +2395,16 @@ class $$QsosTableFilterComposer extends Composer<_$AppDatabase, $QsosTable> {
 
   ColumnFilters<String> get sig => $composableBuilder(
     column: $table.sig,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cqz => $composableBuilder(
+    column: $table.cqz,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2425,6 +2531,16 @@ class $$QsosTableOrderingComposer extends Composer<_$AppDatabase, $QsosTable> {
     column: $table.sig,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cqz => $composableBuilder(
+    column: $table.cqz,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$QsosTableAnnotationComposer
@@ -2508,6 +2624,12 @@ class $$QsosTableAnnotationComposer
 
   GeneratedColumn<String> get sig =>
       $composableBuilder(column: $table.sig, builder: (column) => column);
+
+  GeneratedColumn<String> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+
+  GeneratedColumn<String> get cqz =>
+      $composableBuilder(column: $table.cqz, builder: (column) => column);
 }
 
 class $$QsosTableTableManager
@@ -2561,6 +2683,8 @@ class $$QsosTableTableManager
                 Value<String?> txPwr = const Value.absent(),
                 Value<String?> mySig = const Value.absent(),
                 Value<String?> sig = const Value.absent(),
+                Value<String?> state = const Value.absent(),
+                Value<String?> cqz = const Value.absent(),
               }) => QsosCompanion(
                 id: id,
                 qrzLogid: qrzLogid,
@@ -2585,6 +2709,8 @@ class $$QsosTableTableManager
                 txPwr: txPwr,
                 mySig: mySig,
                 sig: sig,
+                state: state,
+                cqz: cqz,
               ),
           createCompanionCallback:
               ({
@@ -2611,6 +2737,8 @@ class $$QsosTableTableManager
                 Value<String?> txPwr = const Value.absent(),
                 Value<String?> mySig = const Value.absent(),
                 Value<String?> sig = const Value.absent(),
+                Value<String?> state = const Value.absent(),
+                Value<String?> cqz = const Value.absent(),
               }) => QsosCompanion.insert(
                 id: id,
                 qrzLogid: qrzLogid,
@@ -2635,6 +2763,8 @@ class $$QsosTableTableManager
                 txPwr: txPwr,
                 mySig: mySig,
                 sig: sig,
+                state: state,
+                cqz: cqz,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

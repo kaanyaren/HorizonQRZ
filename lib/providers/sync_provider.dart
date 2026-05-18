@@ -201,6 +201,8 @@ class SyncNotifier extends Notifier<SyncState> {
                   lon: Value(record['LON']),
                   comment: Value(record['COMMENT']),
                   freq: Value(record['FREQ']),
+                  state: Value(record['STATE']),
+                  cqz: Value(record['CQZ']),
                 ),
               );
               importedCount++;
@@ -216,6 +218,8 @@ class SyncNotifier extends Notifier<SyncState> {
                   lon: Value(record['LON']),
                   comment: Value(record['COMMENT']),
                   freq: Value(record['FREQ']),
+                  state: Value(record['STATE']),
+                  cqz: Value(record['CQZ']),
                   syncStatus: const Value('synced'),
                 ),
               );

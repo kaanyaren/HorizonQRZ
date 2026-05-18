@@ -155,7 +155,7 @@ class QsoDetailScreen extends StatelessWidget {
             _GridItem('MODE', qso.mode),
             _GridItem('FREQ', (qso.freq == null || qso.freq!.isEmpty) ? '--' : '${qso.freq} MHz'),
           ], theme),
-          const Divider(height: 3.h),
+          Divider(height: 3.h),
           _buildInfoGrid([
             _GridItem('RST SENT', qso.rstSent ?? '--'),
             _GridItem('RST RCVD', qso.rstRcvd ?? '--'),

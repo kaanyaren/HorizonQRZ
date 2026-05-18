@@ -66,76 +66,80 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isMobile = SizerUtil.deviceType == DeviceType.mobile;
 
     return Scaffold(
-      body: Column(
-        children: [
-          const BannerAdWidget(),
-          Expanded(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.all(isMobile ? 6.w : 2.w),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: isMobile ? 100.w : 400),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Image.asset('HorizonQRZLogo_Transparent.png', height: isMobile ? 15.h : 20.h),
-                        SizedBox(height: 3.h),
-                        Text(
-                          'HorizonQRZ',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 6.h),
-                        TextFormField(
-                          controller: _usernameController,
-                          decoration: const InputDecoration(
-                            labelText: 'QRZ Username',
-                            prefixIcon: Icon(Icons.person),
+      body: SafeArea(
+        top: true,
+        bottom: false,
+        child: Column(
+          children: [
+            const BannerAdWidget(),
+            Expanded(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(isMobile ? 6.w : 2.w),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: isMobile ? 100.w : 400),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Image.asset('HorizonQRZLogo_Transparent.png', height: isMobile ? 15.h : 20.h),
+                          SizedBox(height: 3.h),
+                          Text(
+                            'HorizonQRZ',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
                           ),
-                          validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-                        ),
-                        SizedBox(height: 2.h),
-                        TextFormField(
-                          controller: _passwordController,
-                          obscureText: true,
-                          decoration: const InputDecoration(
-                            labelText: 'QRZ Password',
-                            prefixIcon: Icon(Icons.lock),
+                          SizedBox(height: 6.h),
+                          TextFormField(
+                            controller: _usernameController,
+                            decoration: const InputDecoration(
+                              labelText: 'QRZ Username',
+                              prefixIcon: Icon(Icons.person),
+                            ),
+                            validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
                           ),
-                          validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-                        ),
-                        SizedBox(height: 2.h),
-                        TextFormField(
-                          controller: _apiKeyController,
-                          decoration: const InputDecoration(
-                            labelText: 'Logbook API Key',
-                            prefixIcon: Icon(Icons.vpn_key),
-                            helperText: 'Found in QRZ Logbook Settings',
+                          SizedBox(height: 2.h),
+                          TextFormField(
+                            controller: _passwordController,
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                              labelText: 'QRZ Password',
+                              prefixIcon: Icon(Icons.lock),
+                            ),
+                            validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
                           ),
-                          validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-                        ),
-                        SizedBox(height: 4.h),
-                        ElevatedButton(
-                          onPressed: _isLoading ? null : _login,
-                          child: _isLoading
-                              ? SizedBox(
-                                  width: 2.h,
-                                  height: 2.h,
-                                  child: const CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                )
-                              : const Text('Connect to QRZ'),
-                        ),
-                      ],
+                          SizedBox(height: 2.h),
+                          TextFormField(
+                            controller: _apiKeyController,
+                            decoration: const InputDecoration(
+                              labelText: 'Logbook API Key',
+                              prefixIcon: Icon(Icons.vpn_key),
+                              helperText: 'Found in QRZ Logbook Settings',
+                            ),
+                            validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+                          ),
+                          SizedBox(height: 4.h),
+                          ElevatedButton(
+                            onPressed: _isLoading ? null : _login,
+                            child: _isLoading
+                                ? SizedBox(
+                                    width: 2.h,
+                                    height: 2.h,
+                                    child: const CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                  )
+                                : const Text('Connect to QRZ'),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

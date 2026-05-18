@@ -363,8 +363,8 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
           setState(() {
             _selectedMode = label;
             if (label == 'FT8' || label == 'FT4') {
-              _rstSentController.text = '00';
-              _rstRcvdController.text = '00';
+              _rstSentController.text = '0';
+              _rstRcvdController.text = '0';
             } else {
               _rstSentController.text = '59';
               _rstRcvdController.text = '59';
@@ -477,7 +477,7 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
       children: [
         _buildFieldLabel(label),
         DropdownButtonFormField<String>(
-          value: _ft8RstValues.contains(controller.text) ? controller.text : '00',
+          value: _ft8RstValues.contains(controller.text) ? controller.text : _ft8RstValues.first,
           style: Theme.of(context).textTheme.labelMono.copyWith(fontSize: 11.sp, color: AppTheme.onSurface),
           items: _ft8RstValues.map((v) => DropdownMenuItem(value: v, child: Text(v))).toList(),
           onChanged: (v) => setState(() => controller.text = v!),

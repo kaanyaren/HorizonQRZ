@@ -65,13 +65,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return ShowCaseWidget(
       builder: (context) => Scaffold(
-        body: Column(
-          children: [
-            if (selectedIndex != 4) const BannerAdWidget(),
-            Expanded(
-              child: isMobile
-                  ? screens[selectedIndex]
-                  : Row(
+        body: SafeArea(
+          top: true,
+          bottom: false,
+          child: Column(
+            children: [
+              if (selectedIndex != 4) const BannerAdWidget(),
+              Expanded(
+                child: isMobile
+                    ? screens[selectedIndex]
+                    : Row(
                       children: [
                         NavigationRail(
                           selectedIndex: selectedIndex,
@@ -128,7 +131,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ],
         ),
-        bottomNavigationBar: isMobile
+      ),
+      bottomNavigationBar: isMobile
             ? Container(
                 decoration: BoxDecoration(
                   color: AppTheme.surface,
