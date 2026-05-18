@@ -53,12 +53,18 @@ class QrzLogbookService {
   }
 
   Map<String, String> _parseResponse(String data) {
+    print('DEBUG: Raw response data: $data');
     final Map<String, String> result = {};
     final parts = data.split('&');
     for (var part in parts) {
       final kv = part.split('=');
       if (kv.length == 2) {
-        result[kv[0]] = Uri.decodeComponent(kv[1]);
+        try {
+          result[kv[0]] = Uri.decodeComponent(kv[1].replaceAll('+', ' '));
+        } catch (e) {
+          print('DEBUG: Failed to decode part: $part');
+          result[kv[0]] = kv[1]; // Fallback to raw value
+        }
       }
     }
     return result;
