@@ -24,6 +24,7 @@ class LogbookScreen extends ConsumerWidget {
                 const SnackBar(content: Text('Syncing with QRZ...')),
               );
               await ref.read(syncProvider).syncPendingQsos();
+              await ref.read(syncProvider).fetchAndSyncAllLogs();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Sync Complete')),
               );

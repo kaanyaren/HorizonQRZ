@@ -33,18 +33,19 @@ class QrzLogbookService {
     }
   }
 
-  Future<String> extractLog(String apiKey) async {
+  Future<String> fetchLog(String apiKey) async {
     try {
       final response = await _dio.post('', data: {
         'KEY': apiKey,
-        'ACTION': 'EXTRACT',
+        'ACTION': 'FETCH',
+        'OPTION': 'ALL',
       });
 
       final parsed = _parseResponse(response.data);
       if (parsed['RESULT'] == 'OK') {
         return parsed['ADIF'] ?? '';
       } else {
-        throw Exception(parsed['REASON'] ?? 'Extract failed');
+        throw Exception(parsed['REASON'] ?? 'Fetch failed');
       }
     } catch (e) {
       rethrow;

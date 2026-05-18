@@ -32,7 +32,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       final logbookService = ref.read(qrzLogbookServiceProvider);
       final settings = await (db.select(db.appSettings)..limit(1)).getSingleOrNull();
       
-      final adif = await logbookService.extractLog(settings!.logbookApiKey!);
+      final adif = await logbookService.fetchLog(settings!.logbookApiKey!);
       
       setState(() {
         _bandStats = AdifParser.countByField(adif, 'BAND');

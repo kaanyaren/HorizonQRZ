@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/app_providers.dart';
+import '../../providers/sync_provider.dart';
 import '../../database/app_database.dart';
 import 'package:drift/drift.dart' as drift;
 
@@ -15,7 +16,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _apiKeyController = TextEditingController();
+  final _apiKeyController = TextEditingController(text: '4641-A08E-BE39-4503');
   bool _isLoading = false;
 
   Future<void> _login() async {
@@ -44,6 +45,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           logbookApiKey: drift.Value(_apiKeyController.text),
         ),
       );
+
+      // Fetch all logs from QRZ after successful login
+      ref.read(syncProvider).fetchAndSyncAllLogs();
 
       ref.read(authStateProvider.notifier).setAuthenticated(true);
     } catch (e) {
