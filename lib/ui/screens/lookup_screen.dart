@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/app_providers.dart';
+import '../widgets/banner_ad_widget.dart';
 
 class LookupScreen extends ConsumerStatefulWidget {
   const LookupScreen({super.key});
@@ -36,6 +37,7 @@ class _LookupScreenState extends ConsumerState<LookupScreen> {
       appBar: AppBar(title: const Text('Callsign Lookup')),
       body: Column(
         children: [
+          const BannerAdWidget(),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(

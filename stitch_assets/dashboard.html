@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QRZ Logbook - Technical Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#086047",
+                        "on-error-container": "#93000a",
+                        "on-background": "#151c24",
+                        "on-primary-fixed": "#0d1c2e",
+                        "surface-variant": "#dce3ee",
+                        "surface-dim": "#d3dbe5",
+                        "surface-container": "#e7eef9",
+                        "inverse-primary": "#b9c7df",
+                        "surface": "#f7f9ff",
+                        "outline-variant": "#c4c6cd",
+                        "on-secondary-container": "#616363",
+                        "on-surface-variant": "#44474c",
+                        "primary-container": "#475569",
+                        "inverse-on-surface": "#eaf1fc",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#303e51",
+                        "surface-bright": "#f7f9ff",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "on-tertiary-container": "#8dd8b8",
+                        "tertiary-fixed": "#a6f2d1",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#edf4ff",
+                        "secondary-fixed": "#e2e2e2",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#00513b",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#d5e3fc",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "tertiary": "#004633",
+                        "inverse-surface": "#2a3139",
+                        "error": "#ba1a1a",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#002116",
+                        "on-primary": "#ffffff",
+                        "surface-tint": "#515f74",
+                        "secondary": "#5d5f5f",
+                        "primary-fixed-dim": "#b9c7df",
+                        "surface-container-highest": "#dce3ee",
+                        "secondary-container": "#dfe0e0",
+                        "tertiary-fixed-dim": "#8bd6b6",
+                        "on-surface": "#151c24",
+                        "on-secondary-fixed-variant": "#454747",
+                        "background": "#f7f9ff",
+                        "surface-container-high": "#e2e9f4",
+                        "outline": "#75777d",
+                        "on-primary-fixed-variant": "#3a485b",
+                        "on-primary-container": "#bbcae1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "gutter": "12px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "24px",
+                        "base": "4px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["IBM Plex Sans"],
+                        "label-mono": ["IBM Plex Mono"],
+                        "label-caps": ["IBM Plex Sans"],
+                        "headline-sm": ["IBM Plex Sans"],
+                        "body-md": ["IBM Plex Sans"],
+                        "headline-md": ["IBM Plex Sans"],
+                        "headline-lg": ["IBM Plex Sans"],
+                        "body-lg": ["IBM Plex Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-mono": ["13px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Custom scrollbar for high-density log list */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #dce3ee; /* surface-variant */
+            border-radius: 2px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background h-screen w-screen overflow-hidden flex flex-col font-body-md text-body-md selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar Shared Component -->
+<header class="bg-surface text-primary border-b border-outline-variant flat no shadows flex justify-between items-center w-full px-margin-mobile h-14 shrink-0 z-10">
+<button aria-label="Menu" class="text-primary hover:bg-surface-container transition-colors p-2 rounded-full flex items-center justify-center opacity-80 scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<div class="font-headline-md text-headline-md text-primary tracking-widest font-bold">Horizon QRZ</div>
+<button aria-label="Sync" class="text-on-surface-variant hover:bg-surface-container transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="sync">sync</span>
+</button>
+</header>
+<!-- Main Canvas: Zero-scroll compact layout on md+ -->
+<main class="flex-1 overflow-y-auto md:overflow-hidden p-margin-mobile md:p-margin-desktop pb-24 md:pb-margin-desktop">
+<div class="h-full max-w-7xl mx-auto flex flex-col gap-gutter">
+<!-- Top Stats Row (Horizontal) -->
+<div class="flex flex-row gap-gutter shrink-0 overflow-x-auto custom-scrollbar pb-1">
+<div class="flex-1 min-w-[140px] bg-surface-container-lowest border border-surface-variant border-t-2 border-t-primary rounded p-md flex items-center justify-between">
+<div>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-xs">Total QSOs</div>
+<div class="font-headline-sm md:font-headline-md text-primary">12,482</div>
+</div>
+<div class="bg-surface-container-low p-2 rounded-full text-primary hidden sm:block">
+<span class="material-symbols-outlined" data-icon="cell_tower">cell_tower</span>
+</div>
+</div>
+<div class="flex-1 min-w-[140px] bg-surface-container-lowest border border-surface-variant border-t-2 border-t-primary rounded p-md flex items-center justify-between">
+<div>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-xs">Countries</div>
+<div class="font-headline-sm md:font-headline-md text-primary">148</div>
+</div>
+<div class="bg-surface-container-low p-2 rounded-full text-primary hidden sm:block">
+<span class="material-symbols-outlined" data-icon="public">public</span>
+</div>
+</div>
+<div class="flex-1 min-w-[140px] bg-surface-container-lowest border border-surface-variant border-t-2 border-t-primary rounded p-md flex items-center justify-between">
+<div>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-xs">Grid Squares</div>
+<div class="font-headline-sm md:font-headline-md text-primary">892</div>
+</div>
+<div class="bg-surface-container-low p-2 rounded-full text-primary hidden sm:block">
+<span class="material-symbols-outlined" data-icon="grid_on">grid_on</span>
+</div>
+</div>
+</div>
+<!-- Lower Layout: Split View -->
+<div class="flex-1 grid grid-cols-1 md:grid-cols-12 gap-gutter min-h-[400px]">
+<!-- Left/Main: Live Action Panel -->
+<div class="md:col-span-8 flex flex-col gap-gutter bg-surface-container-lowest border border-surface-variant rounded h-full overflow-hidden">
+<!-- Header -->
+<div class="px-md py-sm border-b border-surface-variant flex items-center justify-between bg-surface-bright shrink-0">
+<div class="flex items-center gap-sm">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary-container opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-tertiary-container"></span>
+</span>
+<h2 class="font-headline-sm text-headline-sm text-on-background">Live Action</h2>
+</div>
+<button class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-body-md text-body-md px-4 py-1.5 rounded transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                            Quick Log
+                        </button>
+</div>
+<!-- High Density Log Table -->
+<div class="flex-1 overflow-y-auto custom-scrollbar p-0">
+<table class="w-full text-left border-collapse">
+<thead class="sticky top-0 bg-surface-bright border-b border-surface-variant font-label-caps text-label-caps text-on-surface-variant">
+<tr>
+<th class="py-2 px-md font-normal">Time (UTC)</th>
+<th class="py-2 px-sm font-normal">Callsign</th>
+<th class="py-2 px-sm font-normal">Freq</th>
+<th class="py-2 px-sm font-normal">Mode</th>
+<th class="py-2 px-sm font-normal">RST S/R</th>
+</tr>
+</thead>
+<tbody class="font-label-mono text-label-mono text-on-background">
+<tr class="border-b border-surface-variant bg-surface-container-lowest hover:bg-surface-container-low transition-colors">
+<td class="py-2.5 px-md text-on-surface-variant">14:02:15</td>
+<td class="py-2.5 px-sm text-primary font-bold">VK2AWX</td>
+<td class="py-2.5 px-sm">14.074</td>
+<td class="py-2.5 px-sm"><span class="bg-surface-variant text-on-surface-variant px-1.5 py-0.5 rounded text-[11px]">FT8</span></td>
+<td class="py-2.5 px-sm">+02 / -05</td>
+</tr>
+<tr class="border-b border-surface-variant bg-surface-bright hover:bg-surface-container-low transition-colors">
+<td class="py-2.5 px-md text-on-surface-variant">13:58:40</td>
+<td class="py-2.5 px-sm text-primary font-bold">G4ABC</td>
+<td class="py-2.5 px-sm">14.230</td>
+<td class="py-2.5 px-sm"><span class="bg-surface-variant text-on-surface-variant px-1.5 py-0.5 rounded text-[11px]">SSB</span></td>
+<td class="py-2.5 px-sm">59 / 59</td>
+</tr>
+<tr class="border-b border-surface-variant bg-surface-container-lowest hover:bg-surface-container-low transition-colors">
+<td class="py-2.5 px-md text-on-surface-variant">13:45:11</td>
+<td class="py-2.5 px-sm text-primary font-bold">JA1YCG</td>
+<td class="py-2.5 px-sm">21.074</td>
+<td class="py-2.5 px-sm"><span class="bg-surface-variant text-on-surface-variant px-1.5 py-0.5 rounded text-[11px]">FT8</span></td>
+<td class="py-2.5 px-sm">-11 / -08</td>
+</tr>
+<tr class="border-b border-surface-variant bg-surface-bright hover:bg-surface-container-low transition-colors">
+<td class="py-2.5 px-md text-on-surface-variant">13:30:05</td>
+<td class="py-2.5 px-sm text-primary font-bold">N6RO</td>
+<td class="py-2.5 px-sm">7.025</td>
+<td class="py-2.5 px-sm"><span class="bg-surface-variant text-on-surface-variant px-1.5 py-0.5 rounded text-[11px]">CW</span></td>
+<td class="py-2.5 px-sm">599 / 599</td>
+</tr>
+<tr class="border-b border-surface-variant bg-surface-container-lowest hover:bg-surface-container-low transition-colors">
+<td class="py-2.5 px-md text-on-surface-variant">13:15:22</td>
+<td class="py-2.5 px-sm text-primary font-bold">EA8DED</td>
+<td class="py-2.5 px-sm">14.074</td>
+<td class="py-2.5 px-sm"><span class="bg-surface-variant text-on-surface-variant px-1.5 py-0.5 rounded text-[11px]">FT8</span></td>
+<td class="py-2.5 px-sm">+00 / -15</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Right/Sidebar: Latest QSO & Chart -->
+<div class="md:col-span-4 flex flex-col gap-gutter h-full">
+<!-- Latest QSO Card -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded p-md flex flex-col gap-sm shrink-0 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-sm opacity-10">
+<span class="material-symbols-outlined text-[64px]" data-icon="contact_page">contact_page</span>
+</div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase">Latest Logged</h3>
+<div class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary tracking-tight">VK2AWX</div>
+<div class="flex gap-sm mt-2">
+<span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 rounded font-label-mono text-label-mono">20m</span>
+<span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded font-label-mono text-label-mono">FT8</span>
+</div>
+<div class="font-label-mono text-label-mono text-on-surface-variant mt-1">14.074 MHz • 14:02Z</div>
+</div>
+<!-- Activity Chart -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded p-md flex-1 flex flex-col min-h-[200px]">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-4 shrink-0">Activity (Last 12h)</h3>
+<!-- Simple CSS Bar Chart using Slate/Blue-Grey tones -->
+<div class="flex-1 flex items-end gap-1.5 pt-sm">
+<div class="w-full bg-surface-variant h-[20%] rounded-t-sm hover:bg-primary transition-colors"></div>
+<div class="w-full bg-surface-variant h-[40%] rounded-t-sm hover:bg-primary transition-colors"></div>
+<div class="w-full bg-primary-container h-[70%] rounded-t-sm hover:bg-primary transition-colors"></div>
+<div class="w-full bg-surface-variant h-[30%] rounded-t-sm hover:bg-primary transition-colors"></div>
+<div class="w-full bg-surface-variant h-[10%] rounded-t-sm hover:bg-primary transition-colors"></div>
+<div class="w-full bg-primary h-[90%] rounded-t-sm hover:bg-primary transition-colors"></div>
+<div class="w-full bg-primary-container h-[50%] rounded-t-sm hover:bg-primary transition-colors"></div>
+<div class="w-full bg-surface-variant h-[20%] rounded-t-sm hover:bg-primary transition-colors"></div>
+<div class="w-full bg-primary-container h-[60%] rounded-t-sm hover:bg-primary transition-colors"></div>
+<div class="w-full bg-surface-variant h-[40%] rounded-t-sm hover:bg-primary transition-colors"></div>
+<div class="w-full bg-primary h-[80%] rounded-t-sm hover:bg-primary transition-colors"></div>
+<div class="w-full bg-tertiary-container h-[100%] rounded-t-sm shadow-[0_0_8px_rgba(8,96,71,0.4)]"></div> <!-- Current hour highlighted in Emerald -->
+</div>
+<div class="flex justify-between font-label-mono text-label-mono text-outline mt-2 shrink-0 text-[10px]">
+<span>-12h</span>
+<span>Now</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar Shared Component (Mobile Only) -->
+<nav class="md:hidden bg-surface text-primary border-t border-outline-variant flat no shadows fixed bottom-0 left-0 w-full flex justify-around items-center h-16 z-50">
+<!-- Active Tab: Dashboard -->
+<button class="flex flex-col items-center justify-center text-primary font-bold hover:bg-surface-container-low transition-colors w-full h-full scale-90 duration-150 ease-in-out">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-body-sm text-[12px] mt-1">Dashboard</span>
+</button>
+<!-- Inactive Tabs -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors w-full h-full">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-body-sm text-[12px] mt-1">Log</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors w-full h-full">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-body-sm text-[12px] mt-1">Logbook</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors w-full h-full">
+<span class="material-symbols-outlined" data-icon="military_tech">military_tech</span>
+<span class="font-body-sm text-[12px] mt-1">Awards</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors w-full h-full">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="font-body-sm text-[12px] mt-1">Stats</span>
+</button>
+</nav>
+</body></html>
