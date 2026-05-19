@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — Log Summit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #E8EEF4;
+      --bg-alt: #DDE5EE;
+      --primary: #303E51;
+      --primary-light: #475569;
+      --surface: #F0F4F9;
+      --text-dark: #151C24;
+      --text-medium: #44474C;
+      --text-light: #75777D;
+      --shadow-light: #FFFFFF;
+      --shadow-dark: #C8D0DA;
+      --shadow-dark-strong: #A8B4C2;
+      --radius: 16px;
+      --radius-sm: 12px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text-dark);
+      min-height: 100vh;
+      line-height: 1.75;
+    }
+
+    nav {
+      padding: 1.25rem 0;
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    nav .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--primary);
+    }
+
+    .nav-brand img {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+    }
+
+    .nav-brand span {
+      font-family: 'Montserrat', 'IBM Plex Sans', sans-serif;
+      font-weight: 800;
+      font-size: 1.3rem;
+      letter-spacing: -0.5px;
+      color: var(--primary);
+    }
+
+    .nav-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.6rem 1.25rem;
+      background: var(--surface);
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border-radius: var(--radius-sm);
+      transition: all 0.25s ease;
+      box-shadow: 3px 3px 8px var(--shadow-dark), -3px -3px 8px var(--shadow-light);
+    }
+
+    .nav-back:hover {
+      box-shadow: 4px 4px 12px var(--shadow-dark-strong), -4px -4px 12px var(--shadow-light);
+      transform: translateY(-1px);
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .privacy-header {
+      padding: 3rem 0 2rem;
+      text-align: center;
+    }
+
+    .privacy-header h1 {
+      font-family: 'Montserrat', 'IBM Plex Sans', sans-serif;
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+    }
+
+    .privacy-header .last-updated {
+      color: var(--text-light);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    .privacy-content {
+      padding-bottom: 4rem;
+    }
+
+    .privacy-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      box-shadow: 6px 6px 14px var(--shadow-dark), -6px -6px 14px var(--shadow-light);
+      margin-bottom: 1.75rem;
+    }
+
+    .privacy-card h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--bg-alt);
+    }
+
+    .privacy-card p {
+      color: var(--text-medium);
+      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.8;
+    }
+
+    .privacy-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .privacy-card ul {
+      color: var(--text-medium);
+      font-size: 0.95rem;
+      padding-left: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .privacy-card li {
+      margin-bottom: 0.4rem;
+      line-height: 1.7;
+    }
+
+    .privacy-card strong {
+      color: var(--text-dark);
+    }
+
+    .highlight {
+      background: var(--bg-alt);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      box-shadow: inset 3px 3px 7px var(--shadow-dark), inset -3px -3px 7px var(--shadow-light);
+      margin: 1rem 0;
+    }
+
+    .highlight p {
+      font-size: 0.9rem;
+    }
+
+    footer {
+      padding: 2.5rem 0;
+      text-align: center;
+      border-top: 1px solid var(--bg-alt);
+    }
+
+    footer p {
+      color: var(--text-light);
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer a:hover {
+      color: var(--primary-light);
+    }
+
+    @media (max-width: 480px) {
+      .privacy-card { padding: 1.5rem; }
+      .privacy-header h1 { font-size: 1.75rem; }
+      .container { padding: 0 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <img src="LogSummitLogo_Transparent.png" alt="Log Summit">
+        <span>Log Summit</span>
+      </a>
+      <a href="index.html" class="nav-back">&larr; Back to Home</a>
+    </div>
+  </nav>
+
+  <section class="privacy-header">
+    <div class="container">
+      <h1>Privacy Policy</h1>
+      <p class="last-updated">Last updated: May 19, 2026</p>
+    </div>
+  </section>
+
+  <section class="privacy-content">
+    <div class="container">
+
+      <div class="privacy-card">
+        <h2>1. Introduction</h2>
+        <p>Welcome to <strong>Log Summit</strong> ("we," "our," or "us"). We respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, and safeguard your information when you use our mobile application.</p>
+        <div class="highlight">
+          <p>By using Log Summit, you agree to the collection and use of information in accordance with this policy. If you do not agree, please do not use the application.</p>
+        </div>
+      </div>
+
+      <div class="privacy-card">
+        <h2>2. Information We Collect</h2>
+        <p>We collect the following types of information:</p>
+        <ul>
+          <li><strong>Authentication Data:</strong> When you sign in using Google or Apple, we receive only the minimal information needed to authenticate you &mdash; typically your email address and a unique identifier. We do <strong>not</strong> collect passwords.</li>
+          <li><strong>QSO Log Data:</strong> The amateur radio contact data you enter (callsign, frequency, band, mode, date/time, signal reports, etc.) is stored to provide the core logging functionality.</li>
+          <li><strong>Usage Data:</strong> We use <strong>Google Analytics</strong> (via Firebase) to collect anonymized usage data such as screen views, app version, device type, and crash reports. This data cannot be used to identify you personally.</li>
+          <li><strong>Device Information:</strong> We may collect device model, operating system version, and app version for diagnostics and compatibility purposes.</li>
+        </ul>
+      </div>
+
+      <div class="privacy-card">
+        <h2>3. How We Use Your Information</h2>
+        <p>We use your information solely to:</p>
+        <ul>
+          <li>Provide and maintain the QSO logging service</li>
+          <li>Sync your log data across your devices via Supabase</li>
+          <li>Upload QSOs to third-party platforms (QRZ.com, Club Log, eQSL.cc) when you explicitly request it</li>
+          <li>Authenticate your identity securely using Google or Apple sign-in</li>
+          <li>Monitor app performance and fix bugs</li>
+          <li>Improve the app based on anonymized usage patterns</li>
+        </ul>
+      </div>
+
+      <div class="privacy-card">
+        <h2>4. Data Storage &amp; Security</h2>
+        <p>Your data is processed and stored as follows:</p>
+        <ul>
+          <li><strong>Local Storage:</strong> QSO data is stored locally on your device using an encrypted SQLite database (Drift). This ensures your data is available offline.</li>
+          <li><strong>Cloud Storage:</strong> When sync is enabled, your data is transmitted to Supabase via encrypted connections (TLS) and stored on our self-hosted server.</li>
+          <li><strong>Credentials:</strong> Authentication tokens and sensitive credentials are stored in the device's secure keychain (iOS Keychain / Android Keystore).</li>
+        </ul>
+        <div class="highlight">
+          <p>We implement industry-standard security measures to protect your data. However, no method of transmission over the Internet or electronic storage is 100% secure.</p>
+        </div>
+      </div>
+
+      <div class="privacy-card">
+        <h2>5. Third-Party Services</h2>
+        <p>Log Summit integrates with the following third-party services. Each has its own privacy policy:</p>
+        <ul>
+          <li><strong>Supabase</strong> &mdash; Cloud backend for data sync and authentication</li>
+          <li><strong>Google Sign-In / Apple Sign-In</strong> &mdash; Authentication providers; we receive only your email and a unique ID</li>
+          <li><strong>QRZ.com</strong> &mdash; QSO upload (initiated by you); <a href="https://www.qrz.com/privacy" target="_blank" rel="noopener">QRZ Privacy Policy</a></li>
+          <li><strong>Club Log</strong> &mdash; QSO upload (initiated by you); <a href="https://clublog.org/privacy.php" target="_blank" rel="noopener">Club Log Privacy Policy</a></li>
+          <li><strong>eQSL.cc</strong> &mdash; QSO upload (initiated by you)</li>
+          <li><strong>Google Analytics (Firebase)</strong> &mdash; Anonymized usage tracking</li>
+        </ul>
+        <p>We do <strong>not</strong> sell, share, or distribute your QSO data to any third party except when you explicitly initiate an upload.</p>
+      </div>
+
+      <div class="privacy-card">
+        <h2>6. Data Retention</h2>
+        <p>We retain your QSO log data for as long as your account is active. If you delete your account, we will delete all associated data from our servers within 30 days. Local data on your device remains until you uninstall the app.</p>
+      </div>
+
+      <div class="privacy-card">
+        <h2>7. Your Rights</h2>
+        <p>Depending on your jurisdiction, you may have the following rights:</p>
+        <ul>
+          <li><strong>Access:</strong> Request a copy of your personal data</li>
+          <li><strong>Correction:</strong> Request correction of inaccurate data</li>
+          <li><strong>Deletion:</strong> Request deletion of your personal data</li>
+          <li><strong>Portability:</strong> Export your QSO data in ADIF format at any time from within the app</li>
+          <li><strong>Withdraw Consent:</strong> Disable cloud sync or delete your account at any time</li>
+        </ul>
+        <p>To exercise any of these rights, contact us at <a href="mailto:support@logsummit.app">support@logsummit.app</a>.</p>
+      </div>
+
+      <div class="privacy-card">
+        <h2>8. Children's Privacy</h2>
+        <p>Log Summit is not intended for children under the age of 13. We do not knowingly collect personal information from children. If we discover that a child under 13 has provided us with personal data, we will delete it promptly.</p>
+      </div>
+
+      <div class="privacy-card">
+        <h2>9. International Data Transfers</h2>
+        <p>Your data may be processed on servers located outside your country of residence. By using Log Summit, you consent to the transfer of your data to our self-hosted Supabase instance, which may be located in a different jurisdiction.</p>
+      </div>
+
+      <div class="privacy-card">
+        <h2>10. Changes to This Policy</h2>
+        <p>We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the new policy on this page and updating the "Last updated" date. Your continued use of the app after changes constitutes acceptance of the updated policy.</p>
+      </div>
+
+      <div class="privacy-card">
+        <h2>11. Contact Us</h2>
+        <p>If you have any questions about this Privacy Policy or your data, please contact us:</p>
+        <ul>
+          <li>Email: <a href="mailto:support@logsummit.app">support@logsummit.app</a></li>
+          <li>Website: <a href="https://logsummit.samuel.com.tr">logsummit.samuel.com.tr</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 Log Summit. All rights reserved. &middot; <a href="index.html">Home</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>
