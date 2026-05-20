@@ -4,12 +4,22 @@ import 'package:intl/intl.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:showcaseview/showcaseview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sizer/sizer.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../providers/app_providers.dart';
-import '../../providers/sync_provider.dart';
+import '../../providers/upload_provider.dart';
+import '../../providers/sync_state_provider.dart';
 import '../theme.dart';
 import '../widgets/instrument_card.dart';
 import '../../database/app_database.dart';
+
+const _secureStorage = FlutterSecureStorage();
+
+Future<String?> _getQrzApiKey(AppDatabase db) async {
+  final secureKey = await _secureStorage.read(key: 'qrz_logbook_api_key');
+  if (secureKey != null && secureKey.isNotEmpty) return secureKey;
+  final settings = await (db.select(db.appSettings)..limit(1)).getSingleOrNull();
+  return settings?.logbookApiKey;
+}
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -24,7 +34,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
   final GlobalKey _syncKey = GlobalKey();
   final GlobalKey _statsKey = GlobalKey();
-  final GlobalKey _logKey = GlobalKey();
   final GlobalKey _latestKey = GlobalKey();
 
   @override
@@ -49,7 +58,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
     if (!isDone) {
       if (mounted) {
-        ShowCaseWidget.of(context).startShowCase([_syncKey, _statsKey, _logKey, _latestKey]);
+        ShowCaseWidget.of(context).startShowCase([_syncKey, _statsKey, _latestKey]);
         await prefs.setBool('showcase_done', true);
       }
     }
@@ -59,22 +68,22 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     final db = ref.read(databaseProvider);
     final logbookService = ref.read(qrzLogbookServiceProvider);
 
-    final settings = await (db.select(db.appSettings)..limit(1)).getSingleOrNull();
-    if (settings?.logbookApiKey == null) return {};
+    final apiKey = await _getQrzApiKey(db);
+    if (apiKey == null) return {};
 
-    return await logbookService.getStatus(settings!.logbookApiKey!);
+    return await logbookService.getStatus(apiKey);
   }
 
   @override
   Widget build(BuildContext context) {
     final db = ref.watch(databaseProvider);
     final theme = Theme.of(context);
-    final isMobile = SizerUtil.deviceType == DeviceType.mobile;
+    final isMobile = MediaQuery.of(context).size.width < 600;
 
-    ref.listen<SyncState>(syncProvider, (_, next) {
-      final active = next.phase == SyncPhase.fetching ||
-          next.phase == SyncPhase.parsing ||
-          next.phase == SyncPhase.syncing;
+    ref.listen<AppSyncState>(appSyncProvider, (_, next) {
+      final active = next.phase == AppSyncPhase.syncing ||
+          next.phase == AppSyncPhase.pushing ||
+          next.phase == AppSyncPhase.pulling;
       if (active) {
         _syncAnimController.repeat();
       } else {
@@ -84,13 +93,43 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     });
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: const Text('HORIZON QRZ'),
+        elevation: 0,
+        centerTitle: true,
+        actions: [
+          Showcase(
+            key: _syncKey,
+            description: 'Sync your logs with QRZ.com anytime.',
+            child: IconButton(
+              icon: RotationTransition(
+                turns: _syncAnimController,
+                child: const Icon(Icons.sync_rounded),
+              ),
+              onPressed: () async {
+                ref.read(uploadProvider.notifier).startUpload();
+                ref.read(appSyncProvider.notifier).syncAll();
+                
+                // Also trigger QRZ Import
+                final db = ref.read(databaseProvider);
+                final apiKey = await _getQrzApiKey(db);
+                if (apiKey != null) {
+                  ref.read(qrzImportServiceProvider).importFromQrz(apiKey);
+                }
+              },
+              tooltip: 'Sync Logbooks',
+            ),
+          ),
+        ],
+      ),
       body: FutureBuilder<Map<String, String>>(
         future: _fetchStatus(),
         builder: (context, snapshot) {
           final stats = snapshot.data ?? {};
 
-          return StreamBuilder<List<Qso>>(
-            stream: (db.select(db.qsos)..orderBy([(t) => drift.OrderingTerm.desc(t.qsoDate)])..limit(10)).watch(),
+          return StreamBuilder<List<LocalQso>>(
+            stream: (db.select(db.localQsos)..orderBy([(t) => drift.OrderingTerm.desc(t.qsoDate)])..limit(10)).watch(),
             builder: (context, qsoSnapshot) {
               final recentQsos = qsoSnapshot.data ?? [];
               final latestQso = recentQsos.isNotEmpty ? recentQsos.first : null;
@@ -98,51 +137,24 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
               return RefreshIndicator(
                 onRefresh: () async => setState(() {}),
                 child: ListView(
-                  padding: EdgeInsets.all(isMobile ? 4.w : 2.w),
+                  padding: EdgeInsets.fromLTRB(isMobile ? 16.0 : 8.0, 16.0, isMobile ? 16.0 : 8.0, 96),
                   children: [
-                    SizedBox(height: isMobile ? 4.h : 2.h),
-                    // Branding Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'HorizonQRZ',
-                          style: theme.textTheme.displayLarge?.copyWith(fontSize: 18.sp),
-                        ),
-                        Showcase(
-                          key: _syncKey,
-                          description: 'Sync your logs with QRZ.com anytime.',
-                          child: IconButton(
-                            icon: RotationTransition(
-                              turns: _syncAnimController,
-                              child: const Icon(Icons.sync, color: AppTheme.primary),
-                            ),
-                            onPressed: () => ref.read(syncProvider.notifier).fetchAndSyncAllLogs(),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 3.h),
-
+                    const SizedBox(height: 8.0),
                     // Horizontal Stats Row
                     Showcase(
                       key: _statsKey,
                       description: 'Track your total QSOs, DXCC entities, and confirmations.',
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          mainAxisAlignment: isMobile ? MainAxisAlignment.start : MainAxisAlignment.center,
-                          children: [
-                            _buildStatCard('Total QSOs', stats['qso_count'] ?? '0', isMobile),
-                            SizedBox(width: 3.w),
-                            _buildStatCard('Countries', stats['dxcc_count'] ?? '0', isMobile),
-                            SizedBox(width: 3.w),
-                            _buildStatCard('Confirmed', stats['confirmed_count'] ?? '0', isMobile),
-                          ],
-                        ),
+                      child: Row(
+                        children: [
+                          Expanded(child: _buildStatCard('Total QSOs', stats['qso_count'] ?? '0', isMobile)),
+                          const SizedBox(width: 8.0),
+                          Expanded(child: _buildStatCard('Countries', stats['dxcc_count'] ?? '0', isMobile)),
+                          const SizedBox(width: 8.0),
+                          Expanded(child: _buildStatCard('Confirmed', stats['confirmed_count'] ?? '0', isMobile)),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 3.h),
+                    const SizedBox(height: 24.0),
 
                     // New: Latest Logged & Activity Row (Equal Heights)
                     IntrinsicHeight(
@@ -153,7 +165,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                             flex: 4,
                             child: _buildLatestLoggedCard(theme, latestQso),
                           ),
-                          SizedBox(width: 3.w),
+                          const SizedBox(width: 12.0),
                           Expanded(
                             flex: 5,
                             child: _buildActivityCard(theme),
@@ -161,11 +173,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                         ],
                       ),
                     ),
-                    SizedBox(height: 3.h),
-
-                    // Live Action Panel
-                    _buildLiveActionPanel(theme, recentQsos),
-                    SizedBox(height: 3.h),
+                    const SizedBox(height: 24.0),
                   ],
                 ),
               );
@@ -176,46 +184,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     );
   }
 
-  Widget _buildLiveActionPanel(ThemeData theme, List<Qso> recentQsos) {
-    return InstrumentCard(
-      padding: EdgeInsets.zero,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
-            child: Row(
-              children: [
-                Icon(Icons.sensors, color: AppTheme.tertiary, size: 12.sp),
-                SizedBox(width: 2.w),
-                Text('LIVE ACTION', style: theme.textTheme.headlineSmall?.copyWith(fontSize: 12.sp)),
-                const Spacer(),
-                Showcase(
-                  key: _logKey,
-                  description: 'Quickly log a new contact on the fly.',
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      ref.read(navigationProvider.notifier).setTab(1);
-                    },
-                    icon: Icon(Icons.add, size: 10.sp),
-                    label: const Text('QUICK LOG'),
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 0),
-                      minimumSize: Size(0, 4.h),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Divider(height: 1, color: AppTheme.outlineVariant),
-          _buildLogTable(context, recentQsos),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLatestLoggedCard(ThemeData theme, Qso? latestQso) {
+  Widget _buildLatestLoggedCard(ThemeData theme, LocalQso? latestQso) {
     return Showcase(
       key: _latestKey,
       description: 'View details of your most recent contact.',
@@ -224,19 +193,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('LATEST LOGGED', style: theme.textTheme.labelLarge),
-            SizedBox(height: 1.h),
+            const SizedBox(height: 8.0),
             Text(latestQso?.callsign ?? 'N/A', 
-              style: theme.textTheme.displayLarge?.copyWith(fontSize: 22.sp, color: AppTheme.primary)),
-            SizedBox(height: 1.5.h),
+              style: theme.textTheme.displayLarge?.copyWith(fontSize: 22.0, color: AppTheme.primary)),
+            const SizedBox(height: 12.0),
             if (latestQso != null) ...[
               Row(
                 children: [
                   _buildTag(latestQso.band),
-                  SizedBox(width: 2.w),
+                  const SizedBox(width: 8.0),
                   _buildTag(latestQso.mode),
                 ],
               ),
-              SizedBox(height: 1.h),
+              const SizedBox(height: 8.0),
               Text('${(latestQso.freq != null && latestQso.freq!.isNotEmpty) ? "${latestQso.freq} MHz • " : ""}${DateFormat('HH:mm').format(latestQso.qsoDate)}Z',
                 style: theme.textTheme.labelMono.copyWith(color: AppTheme.onSurfaceVariant)),
             ],
@@ -252,9 +221,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('ACTIVITY (LAST 12H)', style: theme.textTheme.labelLarge),
-          SizedBox(height: 2.h),
+          const SizedBox(height: 16.0),
           SizedBox(
-            height: 10.h,
+            height: 80.0,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: List.generate(12, (index) {
@@ -267,18 +236,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                       color: isCurrent ? AppTheme.tertiary : AppTheme.surfaceVariant,
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
                     ),
-                    height: 10.h * h,
+                    height: 80.0 * h,
                   ),
                 );
               }),
             ),
           ),
-          SizedBox(height: 1.h),
+          const SizedBox(height: 8.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('-12h', style: theme.textTheme.labelMono.copyWith(fontSize: 8.sp)),
-              Text('Now', style: theme.textTheme.labelMono.copyWith(fontSize: 8.sp)),
+              Text('-12h', style: theme.textTheme.labelMono.copyWith(fontSize: 10.0)),
+              Text('Now', style: theme.textTheme.labelMono.copyWith(fontSize: 10.0)),
             ],
           ),
         ],
@@ -288,96 +257,35 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
   Widget _buildStatCard(String label, String value, bool isMobile) {
     return Container(
-      width: isMobile ? 30.w : 20.w,
-      padding: EdgeInsets.all(isMobile ? 3.w : 1.5.w),
+      padding: EdgeInsets.all(isMobile ? 12.0 : 8.0),
       decoration: BoxDecoration(
-        color: AppTheme.surfaceContainerLowest.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(isMobile ? 3.w : 1.w),
+        color: AppTheme.surfaceContainerLowest.withValues(alpha: 0.9),
+        borderRadius: BorderRadius.circular(isMobile ? 12.0 : 8.0),
         border: const Border(top: BorderSide(color: AppTheme.primary, width: 3)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label.toUpperCase(), style: Theme.of(context).textTheme.labelLarge?.copyWith(fontSize: 7.sp, color: AppTheme.onSurfaceVariant)),
-          SizedBox(height: 0.5.h),
-          Text(value, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: AppTheme.primary, fontSize: 16.sp, fontWeight: FontWeight.bold)),
+          Text(label.toUpperCase(), style: Theme.of(context).textTheme.labelLarge?.copyWith(fontSize: 9.0, color: AppTheme.onSurfaceVariant), overflow: TextOverflow.ellipsis),
+          const SizedBox(height: 4.0),
+          Text(value, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: AppTheme.primary, fontSize: 16.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
         ],
       ),
     );
   }
 
-
-  Widget _buildLogTable(BuildContext context, List<Qso> qsos) {
-    return Table(
-      columnWidths: const {
-        0: IntrinsicColumnWidth(),
-        1: FlexColumnWidth(),
-        2: IntrinsicColumnWidth(),
-        3: IntrinsicColumnWidth(),
-        4: IntrinsicColumnWidth(),
-      },
-      children: [
-        TableRow(
-          decoration: const BoxDecoration(color: AppTheme.surfaceContainerHigh),
-          children: [
-            _buildTableHeader('TIME (UTC)'),
-            _buildTableHeader('CALLSIGN'),
-            _buildTableHeader('FREQ'),
-            _buildTableHeader('MODE'),
-            _buildTableHeader('RST S/R'),
-          ],
-        ),
-        ...qsos.map((qso) => TableRow(
-          decoration: BoxDecoration(
-            color: qsos.indexOf(qso) % 2 == 0 ? AppTheme.surfaceContainerLowest : AppTheme.surfaceContainerLow,
-            border: const Border(bottom: BorderSide(color: AppTheme.outlineVariant)),
-          ),
-          children: [
-            _buildTableCell(DateFormat('HH:mm:ss').format(qso.qsoDate), color: AppTheme.onSurfaceVariant),
-            _buildTableCell(qso.callsign, bold: true, color: AppTheme.primary),
-            _buildTableCell((qso.freq == null || qso.freq!.isEmpty) ? '-' : qso.freq!),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 2.w),
-              child: _buildTag(qso.mode, compact: true),
-            ),
-            _buildTableCell('${qso.rstSent ?? ""}/${qso.rstRcvd ?? ""}'),
-          ],
-        )),
-        if (qsos.isEmpty)
-          TableRow(children: List.generate(5, (_) => Padding(padding: EdgeInsets.all(4.w), child: const Text('No data')))),
-      ],
-    );
-  }
-
-  Widget _buildTableHeader(String text) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 2.w),
-      child: Text(text, style: Theme.of(context).textTheme.labelLarge?.copyWith(fontSize: 8.sp)),
-    );
-  }
-
-  Widget _buildTableCell(String text, {bool bold = false, Color? color}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 1.2.h, horizontal: 2.w),
-      child: Text(text, style: Theme.of(context).textTheme.labelMono.copyWith(
-        fontWeight: bold ? FontWeight.bold : FontWeight.w500,
-        color: color,
-        fontSize: 9.sp,
-      )),
-    );
-  }
-
   Widget _buildTag(String text, {bool compact = false}) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: compact ? 1.w : 2.w, vertical: compact ? 0.2.h : 0.5.h),
-      decoration: BoxDecoration(color: AppTheme.surfaceVariant, borderRadius: BorderRadius.circular(3.w)),
+      padding: EdgeInsets.symmetric(horizontal: compact ? 4.0 : 8.0, vertical: compact ? 2.0 : 4.0),
+      decoration: BoxDecoration(color: AppTheme.surfaceVariant, borderRadius: BorderRadius.circular(12.0)),
       child: Text(text, style: Theme.of(context).textTheme.labelMono.copyWith(
-        fontSize: compact ? 7.sp : 8.sp,
+        fontSize: compact ? 9.0 : 10.0,
         color: AppTheme.onSurfaceVariant,
       )),
     );
   }
 }
+

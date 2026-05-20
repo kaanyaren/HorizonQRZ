@@ -1,184 +1,156 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:showcaseview/showcaseview.dart';
-import 'package:sizer/sizer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:showcaseview/showcaseview.dart';
+import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 import '../../providers/app_providers.dart';
 import '../theme.dart';
-import '../widgets/banner_ad_widget.dart';
-import 'dashboard_screen.dart';
 import 'logger_screen.dart';
 import 'logbook_screen.dart';
-import 'awards_screen.dart';
+import 'dashboard_screen.dart';
 import 'settings_screen.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
 
-  @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+class TabItem {
+  final IconData icon;
+  final String label;
+  final String path;
+  
+  TabItem(this.icon, this.label, {required this.path});
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
-  @override
-  Widget build(BuildContext context) {
-    final isMobile = SizerUtil.deviceType == DeviceType.mobile;
-    final selectedIndex = ref.watch(navigationProvider);
+class HomeScreen extends ConsumerWidget {
+  const HomeScreen({super.key});
 
-    final List<Widget> screens = [
+  static final tabs = [
+    TabItem(Icons.home_rounded, 'Home', path: '/'),
+    TabItem(Icons.add_circle_rounded, 'Log', path: '/logger'),
+    TabItem(Icons.book_rounded, 'Logbook', path: '/logbook'),
+    TabItem(Icons.settings_rounded, 'Settings', path: '/settings'),
+  ];
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedIndex = ref.watch(navigationProvider);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 450;
+    
+    // Calculate custom beautiful widths for the floating bar
+    final barWidth = screenWidth > 600 ? 460.0 : screenWidth - 24;
+
+    final itemPadding = isMobile 
+        ? const EdgeInsets.symmetric(horizontal: 12, vertical: 8) 
+        : const EdgeInsets.symmetric(horizontal: 16, vertical: 10);
+    final iconSize = isMobile ? 22.0 : 24.0;
+    final fontSize = isMobile ? 12.0 : 13.0;
+    final gap = isMobile ? 4.0 : 6.0;
+
+    final screens = [
       const DashboardScreen(),
       const LoggerScreen(),
       const LogbookScreen(),
-      const AwardsScreen(),
       const SettingsScreen(),
     ];
 
-    ref.listen<AppNotification?>(notificationProvider, (previous, next) {
-      if (next != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (next.title != null)
-                  Text(
-                    next.title!,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                Text(next.message),
-              ],
+    return ShowCaseWidget(
+      builder: (context) {
+        return Scaffold(
+          extendBody: true,
+          body: BottomBar(
+            showIcon: false,
+            scrollBehavior: const BottomBarScrollBehavior(
+              hideOnScroll: true,
             ),
-            backgroundColor: next.isError ? AppTheme.error : AppTheme.primary,
-            action: SnackBarAction(
-              label: 'DISMISS',
-              textColor: Colors.white,
-              onPressed: () {
-                ref.read(notificationProvider.notifier).clear();
-              },
+            layout: BottomBarLayout(
+              width: barWidth,
+              borderRadius: BorderRadius.circular(32),
+              offset: 12,
+              alignment: Alignment.bottomCenter,
+              respectSafeArea: true,
+            ),
+            theme: BottomBarThemeData(
+              barDecoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.92),
+                borderRadius: BorderRadius.circular(32),
+                border: Border.all(
+                  color: AppTheme.primary.withOpacity(0.12),
+                  width: 1.2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(32),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                child: Container(
+                  height: isMobile ? 58 : 66,
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: List.generate(tabs.length, (index) {
+                      final tab = tabs[index];
+                      final isSelected = selectedIndex == index;
+                      return GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          ref.read(navigationProvider.notifier).setTab(index);
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeInOut,
+                          padding: itemPadding,
+                          decoration: BoxDecoration(
+                            color: isSelected 
+                                ? AppTheme.primary.withOpacity(0.12) 
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                tab.icon,
+                                color: isSelected 
+                                    ? AppTheme.primary 
+                                    : AppTheme.onSurfaceVariant,
+                                size: iconSize,
+                              ),
+                              if (isSelected) ...[
+                                SizedBox(width: gap),
+                                Text(
+                                  tab.label,
+                                  style: GoogleFonts.spaceGrotesk(
+                                    fontSize: fontSize,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppTheme.primary,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ),
+            ),
+            body: IndexedStack(
+              index: selectedIndex,
+              children: screens,
             ),
           ),
         );
-      }
-    });
-
-    return ShowCaseWidget(
-      builder: (context) => Scaffold(
-        body: SafeArea(
-          top: true,
-          bottom: false,
-          child: Column(
-            children: [
-              if (selectedIndex != 4) const BannerAdWidget(),
-              Expanded(
-                child: isMobile
-                    ? screens[selectedIndex]
-                    : Row(
-                      children: [
-                        NavigationRail(
-                          selectedIndex: selectedIndex,
-                          onDestinationSelected: (index) {
-                            ref.read(navigationProvider.notifier).setTab(index);
-                          },
-                          labelType: NavigationRailLabelType.all,
-                          backgroundColor: AppTheme.surface,
-                          indicatorColor: AppTheme.primary.withOpacity(0.1),
-                          selectedIconTheme: IconThemeData(color: AppTheme.primary, size: 20.sp),
-                          unselectedIconTheme: IconThemeData(color: AppTheme.onSurfaceVariant, size: 20.sp),
-                          selectedLabelTextStyle: GoogleFonts.ibmPlexSans(
-                            fontSize: 8.sp,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.primary,
-                          ),
-                          unselectedLabelTextStyle: GoogleFonts.ibmPlexSans(
-                            fontSize: 8.sp,
-                            fontWeight: FontWeight.w400,
-                            color: AppTheme.onSurfaceVariant,
-                          ),
-                          destinations: const [
-                            NavigationRailDestination(
-                              icon: Icon(Icons.dashboard_outlined),
-                              selectedIcon: Icon(Icons.dashboard),
-                              label: Text('Home'),
-                            ),
-                            NavigationRailDestination(
-                              icon: Icon(Icons.add_circle_outline),
-                              selectedIcon: Icon(Icons.add_circle),
-                              label: Text('Log'),
-                            ),
-                            NavigationRailDestination(
-                              icon: Icon(Icons.history),
-                              selectedIcon: Icon(Icons.history),
-                              label: Text('Logbook'),
-                            ),
-                            NavigationRailDestination(
-                              icon: Icon(Icons.military_tech_outlined),
-                              selectedIcon: Icon(Icons.military_tech),
-                              label: Text('Awards'),
-                            ),
-                            NavigationRailDestination(
-                              icon: Icon(Icons.settings_outlined),
-                              selectedIcon: Icon(Icons.settings),
-                              label: Text('Settings'),
-                            ),
-                          ],
-                        ),
-                        const VerticalDivider(thickness: 1, width: 1, color: AppTheme.outlineVariant),
-                        Expanded(child: screens[selectedIndex]),
-                      ],
-                    ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: isMobile
-            ? Container(
-                decoration: BoxDecoration(
-                  color: AppTheme.surface,
-                  boxShadow: [
-                    BoxShadow(blurRadius: 20, color: Colors.black.withOpacity(.1)),
-                  ],
-                  border: const Border(
-                    top: BorderSide(color: AppTheme.outlineVariant),
-                  ),
-                ),
-                child: SafeArea(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 3.w,
-                      vertical: 1.h,
-                    ),
-                    child: GNav(
-                      rippleColor: AppTheme.primary.withOpacity(0.1),
-                      hoverColor: AppTheme.primary.withOpacity(0.05),
-                      gap: 2.w,
-                      activeColor: Colors.white,
-                      iconSize: 18.sp,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 4.w,
-                        vertical: 1.5.h,
-                      ),
-                      duration: const Duration(milliseconds: 400),
-                      tabBackgroundColor: AppTheme.primary,
-                      color: AppTheme.onSurfaceVariant,
-                      tabs: const [
-                        GButton(icon: Icons.dashboard_outlined, text: 'Home'),
-                        GButton(icon: Icons.add_circle_outline, text: 'Log'),
-                        GButton(icon: Icons.history, text: 'Logbook'),
-                        GButton(icon: Icons.military_tech_outlined, text: 'Awards'),
-                        GButton(icon: Icons.settings_outlined, text: 'Settings'),
-                      ],
-                      selectedIndex: selectedIndex,
-                      onTabChange: (index) {
-                        ref.read(navigationProvider.notifier).setTab(index);
-                      },
-                    ),
-                  ),
-                ),
-              )
-            : null,
-      ),
+      },
     );
   }
 }

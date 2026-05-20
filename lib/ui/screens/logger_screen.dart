@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:sizer/sizer.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import '../../providers/app_providers.dart';
 import '../../database/app_database.dart';
 import 'package:drift/drift.dart' as drift;
@@ -90,12 +90,19 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final db = ref.read(databaseProvider);
-    await db.into(db.qsos).insert(
-      QsosCompanion.insert(
+    await db.into(db.localQsos).insert(
+      LocalQsosCompanion.insert(
+        id: DateTime.now().toIso8601String(),
         callsign: _callsignController.text.toUpperCase(),
+        userUuid: '',
+        supabaseId: DateTime.now().toIso8601String(),
         qsoDate: DateTime.now().toUtc(),
+        timeOn: DateFormat('HHmmss').format(DateTime.now().toUtc()),
         band: _selectedBand,
         mode: _selectedMode,
+        stationCallsign: '',
+        syncStatus: 'pending_upload',
+        syncVersion: 0,
         freq: drift.Value(_freqController.text),
         rstSent: drift.Value(_rstSentController.text),
         rstRcvd: drift.Value(_rstRcvdController.text),
@@ -127,65 +134,111 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
     final theme = Theme.of(context);
     
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: ListView(
-        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
-        children: [
-          SizedBox(height: 2.h),
-          _buildHeader(theme),
-          SizedBox(height: 2.h),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      body: SafeArea(
+        bottom: false,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
+          children: [
+            const SizedBox(height: 4),
+            _buildHeader(theme),
+            const SizedBox(height: 16),
 
-          Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                _buildStationSection(theme),
-                SizedBox(height: 2.h),
-                _buildRadioSection(theme),
-                SizedBox(height: 2.h),
-                _buildReportSection(theme),
-                SizedBox(height: 2.h),
-                _buildNotesSection(theme),
-              ],
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  _buildStationSection(theme),
+                  const SizedBox(height: 16),
+                  _buildRadioSection(theme),
+                  const SizedBox(height: 16),
+                  _buildReportSection(theme),
+                  const SizedBox(height: 16),
+                  _buildNotesSection(theme),
+                ],
+              ),
             ),
-          ),
-          
-          SizedBox(height: 3.h),
-          _buildActionsSection(),
-          SizedBox(height: 4.h),
-        ],
+            
+            const SizedBox(height: 24),
+            _buildActionsSection(),
+            const SizedBox(height: 32),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildHeader(ThemeData theme) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('LOGGER', style: theme.textTheme.labelMono.copyWith(fontSize: 8.sp, color: AppTheme.primary, letterSpacing: 2)),
-            Text('NEW QSO', style: theme.textTheme.displayLarge?.copyWith(fontSize: 18.sp, height: 1.1)),
-          ],
-        ),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
-          decoration: BoxDecoration(
-            color: AppTheme.primary,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('UTC TIME', style: theme.textTheme.labelMono.copyWith(fontSize: 7.sp, color: Colors.white70)),
-              Text(DateFormat('HH:mm:ss').format(_utcTime), 
-                style: theme.textTheme.labelMono.copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12.sp)),
+              Text(
+                'LOGGER', 
+                style: theme.textTheme.labelMono.copyWith(
+                  fontSize: 10, 
+                  color: AppTheme.primary, 
+                  letterSpacing: 2.5,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'NEW QSO', 
+                style: theme.textTheme.displayLarge?.copyWith(
+                  fontSize: 24, 
+                  height: 1.1,
+                ),
+              ),
             ],
           ),
-        ),
-      ],
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [AppTheme.primary, AppTheme.secondary],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.primary.withOpacity(0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  'UTC TIME', 
+                  style: theme.textTheme.labelMono.copyWith(
+                    fontSize: 8, 
+                    color: Colors.white.withOpacity(0.8),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  DateFormat('HH:mm:ss').format(_utcTime), 
+                  style: theme.textTheme.labelMono.copyWith(
+                    color: Colors.white, 
+                    fontWeight: FontWeight.w900, 
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -196,7 +249,7 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSectionHeader('STATION DETAILS'),
-          SizedBox(height: 1.5.h),
+          const SizedBox(height: 16),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -208,19 +261,33 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
                     _buildFieldLabel('CALLSIGN'),
                     TextFormField(
                       controller: _callsignController,
-                      style: theme.textTheme.labelMono.copyWith(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                      style: theme.textTheme.labelMono.copyWith(
+                        fontSize: 18, 
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.primary,
+                      ),
                       textCapitalization: TextCapitalization.characters,
                       onChanged: (val) => _doLookup(val),
                       decoration: InputDecoration(
-                        hintText: '---',
-                        suffixIcon: _isLookingUp ? const SizedBox(width: 20, height: 20, child: Padding(padding: EdgeInsets.all(12), child: CircularProgressIndicator(strokeWidth: 2))) : null,
+                        hintText: 'e.g. W1AW',
+                        prefixIcon: const Icon(Icons.radio_rounded, color: AppTheme.primary),
+                        suffixIcon: _isLookingUp 
+                            ? const Padding(
+                                padding: EdgeInsets.all(12),
+                                child: SizedBox(
+                                  width: 18, 
+                                  height: 18, 
+                                  child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primary),
+                                ),
+                              ) 
+                            : null,
                       ),
                       validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                     ),
                   ],
                 ),
               ),
-              SizedBox(width: 3.w),
+              const SizedBox(width: 12),
               Expanded(
                 flex: 2,
                 child: Column(
@@ -229,8 +296,11 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
                     _buildFieldLabel('NAME'),
                     TextFormField(
                       controller: _nameController,
-                      style: theme.textTheme.bodyMedium?.copyWith(fontSize: 10.sp),
-                      decoration: const InputDecoration(hintText: 'Operator Name'),
+                      style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                      decoration: const InputDecoration(
+                        hintText: 'Operator Name',
+                        prefixIcon: Icon(Icons.person_outline_rounded, color: AppTheme.outline),
+                      ),
                     ),
                   ],
                 ),
@@ -238,7 +308,7 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
             ],
           ),
           if (_lookupData != null) ...[
-            SizedBox(height: 1.5.h),
+            const SizedBox(height: 14),
             _buildLookupPreview(theme),
           ],
         ],
@@ -248,39 +318,69 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
 
   Widget _buildLookupPreview(ThemeData theme) {
     return Container(
-      padding: EdgeInsets.all(3.w),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppTheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppTheme.primary.withOpacity(0.2)),
+        color: AppTheme.primaryContainer.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.primary.withOpacity(0.15), width: 1.2),
       ),
       child: Row(
         children: [
           if (_lookupData!['image'] != null)
             ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: Image.network(_lookupData!['image'], width: 12.w, height: 12.w, fit: BoxFit.cover),
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(_lookupData!['image'], width: 44, height: 44, fit: BoxFit.cover),
             )
           else
-            Icon(Icons.person, size: 10.w, color: AppTheme.onSurfaceVariant.withOpacity(0.5)),
-          SizedBox(width: 3.w),
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: AppTheme.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.account_box_rounded, size: 24, color: AppTheme.primary),
+            ),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(_lookupData!['qth'] ?? 'Unknown QTH', style: theme.textTheme.labelLarge?.copyWith(fontSize: 9.sp)),
-                Text(_lookupData!['country'] ?? '', style: theme.textTheme.bodySmall?.copyWith(fontSize: 8.sp, color: AppTheme.onSurfaceVariant)),
+                Text(
+                  _lookupData!['qth'] ?? 'Unknown QTH', 
+                  style: theme.textTheme.headlineSmall?.copyWith(fontSize: 13, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  _lookupData!['country'] ?? '', 
+                  style: theme.textTheme.bodySmall?.copyWith(fontSize: 11, color: AppTheme.onSurfaceVariant, fontWeight: FontWeight.w500),
+                ),
               ],
             ),
           ),
           if (_lookupData!['gridsquare'] != null)
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.5.h),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: AppTheme.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(4),
+                gradient: const LinearGradient(
+                  colors: [AppTheme.primary, AppTheme.secondary],
+                ),
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primary.withOpacity(0.1),
+                    blurRadius: 4,
+                  ),
+                ],
               ),
-              child: Text(_lookupData!['gridsquare'], style: theme.textTheme.labelMono.copyWith(fontSize: 8.sp, fontWeight: FontWeight.bold)),
+              child: Text(
+                _lookupData!['gridsquare'], 
+                style: theme.textTheme.labelMono.copyWith(
+                  fontSize: 10, 
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
             ),
         ],
       ),
@@ -294,7 +394,7 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSectionHeader('RADIO SETTINGS'),
-          SizedBox(height: 1.5.h),
+          const SizedBox(height: 16),
           Row(
             children: [
               Expanded(
@@ -304,13 +404,16 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
                     _buildFieldLabel('BAND'),
                     DropdownButtonFormField<String>(
                       value: _selectedBand,
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.waves_rounded, color: AppTheme.secondary),
+                      ),
                       items: _bands.map((b) => DropdownMenuItem(value: b, child: Text(b))).toList(),
                       onChanged: (v) => setState(() => _selectedBand = v!),
                     ),
                   ],
                 ),
               ),
-              SizedBox(width: 3.w),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -319,16 +422,20 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
                     TextFormField(
                       controller: _freqController,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      style: theme.textTheme.labelMono,
-                      decoration: const InputDecoration(hintText: '0.000'),
+                      style: theme.textTheme.labelMono.copyWith(color: AppTheme.secondary, fontWeight: FontWeight.bold),
+                      decoration: const InputDecoration(
+                        hintText: '0.000',
+                        prefixIcon: Icon(Icons.settings_input_antenna_rounded, color: AppTheme.secondary),
+                      ),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          SizedBox(height: 2.h),
+          const SizedBox(height: 16),
           _buildFieldLabel('OPERATING MODE'),
+          const SizedBox(height: 6),
           _buildModeSelector(theme),
         ],
       ),
@@ -339,16 +446,24 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
     final allModes = _showAllModes ? [..._mainModes, ..._extraModes] : _mainModes;
     
     return Wrap(
-      spacing: 2.w,
-      runSpacing: 1.h,
+      spacing: 8,
+      runSpacing: 8,
       children: [
         ...allModes.map((m) => _buildModeChip(m, _selectedMode == m)),
         ActionChip(
           label: Text(_showAllModes ? 'LESS' : 'MORE'),
           onPressed: () => setState(() => _showAllModes = !_showAllModes),
-          backgroundColor: AppTheme.surfaceContainerHighest,
-          labelStyle: theme.textTheme.labelLarge?.copyWith(fontSize: 8.sp, fontWeight: FontWeight.bold),
-          padding: EdgeInsets.zero,
+          backgroundColor: AppTheme.surfaceContainerLow,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: const BorderSide(color: AppTheme.outlineVariant, width: 1.2),
+          ),
+          labelStyle: theme.textTheme.labelLarge?.copyWith(
+            fontSize: 9, 
+            fontWeight: FontWeight.bold,
+            color: AppTheme.primary,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         ),
       ],
     );
@@ -373,12 +488,20 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
         }
       },
       showCheckmark: false,
-      padding: EdgeInsets.symmetric(horizontal: 3.w),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(
+          color: selected ? Colors.transparent : AppTheme.outlineVariant,
+          width: 1.2,
+        ),
+      ),
       selectedColor: AppTheme.primary,
+      backgroundColor: Colors.white,
       labelStyle: Theme.of(context).textTheme.labelMono.copyWith(
-        fontSize: 9.sp,
+        fontSize: 10,
         color: selected ? Colors.white : AppTheme.onSurfaceVariant,
-        fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+        fontWeight: selected ? FontWeight.bold : FontWeight.w600,
       ),
     );
   }
@@ -392,7 +515,7 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSectionHeader('SIGNAL REPORTS (RST)'),
-          SizedBox(height: 1.5.h),
+          const SizedBox(height: 16),
           if (isDigital)
             _buildDigitalRstFields(theme)
           else
@@ -406,7 +529,7 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
     return Column(
       children: [
         _buildRstRow('SENT', _rstSentController),
-        SizedBox(height: 2.h),
+        const SizedBox(height: 16),
         _buildRstRow('RCVD', _rstRcvdController),
       ],
     );
@@ -415,42 +538,80 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
   Widget _buildRstRow(String label, TextEditingController controller) {
     return Row(
       children: [
-        SizedBox(width: 14.w, child: _buildFieldLabel(label)),
-        Expanded(
-          flex: 2,
+        SizedBox(
+          width: 54, 
+          child: _buildFieldLabel(label),
+        ),
+        Container(
+          width: 64,
+          height: 40,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: AppTheme.outlineVariant, width: 1.2),
+          ),
           child: TextFormField(
             controller: controller,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.labelMono.copyWith(fontSize: 12.sp, fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.labelMono.copyWith(
+              fontSize: 14, 
+              fontWeight: FontWeight.w900,
+              color: AppTheme.primary,
+            ),
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
+              filled: false,
+            ),
           ),
         ),
-        SizedBox(width: 3.w),
+        const SizedBox(width: 12),
         Expanded(
-          flex: 6,
           child: SizedBox(
-            height: 4.h,
+            height: 40,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
               itemCount: _rstValues.length,
-              separatorBuilder: (_, __) => SizedBox(width: 2.w),
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
               itemBuilder: (context, index) {
                 final val = _rstValues[index];
                 final isSelected = controller.text == val;
                 return GestureDetector(
                   onTap: () => setState(() => controller.text = val),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 3.w),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: isSelected ? AppTheme.tertiary : AppTheme.surfaceContainerLow,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: isSelected ? Colors.transparent : AppTheme.outlineVariant),
+                      gradient: isSelected 
+                          ? const LinearGradient(colors: [AppTheme.tertiary, AppTheme.secondary])
+                          : null,
+                      color: isSelected ? null : AppTheme.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: isSelected ? Colors.transparent : AppTheme.outlineVariant,
+                        width: 1.2,
+                      ),
+                      boxShadow: isSelected ? [
+                        BoxShadow(
+                          color: AppTheme.tertiary.withOpacity(0.2),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ] : null,
                     ),
-                    child: Text(val, style: Theme.of(context).textTheme.labelMono.copyWith(
-                      fontSize: 9.sp,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      color: isSelected ? Colors.white : AppTheme.onSurfaceVariant,
-                    )),
+                    child: Text(
+                      val, 
+                      style: Theme.of(context).textTheme.labelMono.copyWith(
+                        fontSize: 11,
+                        fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold,
+                        color: isSelected ? Colors.white : AppTheme.onSurfaceVariant,
+                      ),
+                    ),
                   ),
                 );
               },
@@ -465,7 +626,7 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
     return Row(
       children: [
         Expanded(child: _buildDigitalRstPicker('SENT', _rstSentController)),
-        SizedBox(width: 4.w),
+        const SizedBox(width: 16),
         Expanded(child: _buildDigitalRstPicker('RCVD', _rstRcvdController)),
       ],
     );
@@ -478,7 +639,7 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
         _buildFieldLabel(label),
         DropdownButtonFormField<String>(
           value: _ft8RstValues.contains(controller.text) ? controller.text : _ft8RstValues.first,
-          style: Theme.of(context).textTheme.labelMono.copyWith(fontSize: 11.sp, color: AppTheme.onSurface),
+          style: Theme.of(context).textTheme.labelMono.copyWith(fontSize: 12, color: AppTheme.onSurface),
           items: _ft8RstValues.map((v) => DropdownMenuItem(value: v, child: Text(v))).toList(),
           onChanged: (v) => setState(() => controller.text = v!),
         ),
@@ -493,14 +654,14 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSectionHeader('COMMENTS / NOTES'),
-          SizedBox(height: 1.h),
+          const SizedBox(height: 10),
           TextFormField(
             controller: _commentsController,
             maxLines: 3,
-            style: theme.textTheme.bodyMedium,
+            style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
             decoration: const InputDecoration(
               hintText: 'QTH, Rig details, Signal quality, etc...',
-              contentPadding: EdgeInsets.all(12),
+              contentPadding: EdgeInsets.all(14),
             ),
           ),
         ],
@@ -515,29 +676,36 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
           child: OutlinedButton(
             onPressed: _clearForm,
             style: OutlinedButton.styleFrom(
-              padding: EdgeInsets.symmetric(vertical: 2.h),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               foregroundColor: AppTheme.error,
-              side: BorderSide(color: AppTheme.error.withOpacity(0.5)),
+              side: const BorderSide(color: AppTheme.error, width: 1.5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
             ),
             child: const Text('CLEAR FORM'),
           ),
         ),
-        SizedBox(width: 4.w),
+        const SizedBox(width: 16),
         Expanded(
           flex: 2,
           child: ElevatedButton(
             onPressed: _saveQso,
             style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.symmetric(vertical: 2.h),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               backgroundColor: AppTheme.primary,
               elevation: 4,
+              shadowColor: AppTheme.primary.withOpacity(0.3),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.send_rounded),
-                SizedBox(width: 2.w),
-                const Text('LOG CONTACT'),
+                const Icon(Icons.send_rounded, color: Colors.white),
+                const SizedBox(width: 8),
+                const Text('LOG CONTACT', style: TextStyle(color: Colors.white)),
               ],
             ),
           ),
@@ -551,31 +719,41 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
       children: [
         Container(
           width: 4,
-          height: 14,
+          height: 16,
           decoration: BoxDecoration(
-            color: AppTheme.primary,
+            gradient: const LinearGradient(
+              colors: [AppTheme.primary, AppTheme.secondary],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
             borderRadius: BorderRadius.circular(2),
           ),
         ),
-        SizedBox(width: 2.w),
-        Text(title, style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          fontSize: 9.sp, 
-          letterSpacing: 1.2,
-          color: AppTheme.primary,
-          fontWeight: FontWeight.bold,
-        )),
+        const SizedBox(width: 8),
+        Text(
+          title, 
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+            fontSize: 10, 
+            letterSpacing: 1.2,
+            color: AppTheme.primary,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildFieldLabel(String label) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 0.5.h),
-      child: Text(label, style: Theme.of(context).textTheme.labelMono.copyWith(
-        fontSize: 7.sp, 
-        color: AppTheme.onSurfaceVariant.withOpacity(0.7),
-        fontWeight: FontWeight.bold,
-      )),
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Text(
+        label, 
+        style: Theme.of(context).textTheme.labelMono.copyWith(
+          fontSize: 9, 
+          color: AppTheme.onSurfaceVariant.withOpacity(0.8),
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 }

@@ -1,57 +1,85 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sizer/sizer.dart';
-import 'package:particles_network/particles_network.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'providers/app_providers.dart';
-import 'providers/sync_provider.dart';
+import 'package:responsive_framework/responsive_framework.dart';
+import 'providers/auth_provider.dart';
+import 'services/supabase_service.dart';
 import 'ui/screens/login_screen.dart';
 import 'ui/screens/home_screen.dart';
 import 'ui/theme.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize();
-  runApp(const ProviderScope(child: HorizonQRZApp()));
+  
+  try {
+    await SupabaseService.initialize();
+  } catch (e) {
+    // If Supabase initialization fails, show an error screen
+    runApp(ProviderScope(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.cloud_off, size: 64, color: Colors.red[300]),
+                SizedBox(height: 16),
+                Text(
+                  'Connection Error',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Failed to connect to server:\n$e',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                ),
+              ],
+            ),
+            ),
+          ),
+        ),
+      ),
+    ));
+    return;
+  }
+  
+  runApp(const ProviderScope(child: LogSummitApp()));
 }
 
-class HorizonQRZApp extends ConsumerWidget {
-  const HorizonQRZApp({super.key});
+class LogSummitApp extends StatelessWidget {
+  const LogSummitApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Initialize sync service
-    ref.read(syncProvider);
-
-    return Sizer(
-      builder: (context, orientation, deviceType) {
-        return MaterialApp(
-          title: 'HorizonQRZ',
-          theme: AppTheme.lightTheme,
-          builder: (context, child) {
-            return Stack(
-              children: [
-                // Base background color
-                Container(color: const Color(0xFFF7F9FF)),
-                // Particle animation
-                ParticleNetwork(
-                  particleCount: 80,
-                  maxSpeed: 0.5,
-                  maxSize: 2.0,
-                  lineWidth: 1.0,
-                  lineDistance: 100,
-                  particleColor: const Color(0xFFE2E9F4), // Even lighter grey/blue-grey
-                  lineColor: const Color(0xFFE2E9F4),
-                  touchActivation: true,
-                  gravityType: GravityType.none,
-                ),
-                if (child != null) child,
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Log Summit',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      builder: (context, child) => ResponsiveBreakpoints.builder(
+        child: Builder(
+          builder: (context) => ResponsiveScaledBox(
+            width: ResponsiveValue<double>(
+              context,
+              defaultValue: 375,
+              conditionalValues: [
+                const Condition.equals(name: MOBILE, value: 375),
+                const Condition.equals(name: TABLET, value: 800),
+                const Condition.equals(name: DESKTOP, value: 1200),
               ],
-            );
-          },
-          home: const AuthWrapper(),
-        );
-      },
+            ).value,
+            child: child!,
+          ),
+        ),
+        breakpoints: [
+          const Breakpoint(start: 0, end: 450, name: MOBILE),
+          const Breakpoint(start: 451, end: 800, name: TABLET),
+          const Breakpoint(start: 801, end: 1920, name: DESKTOP),
+        ],
+      ),
+      home: const AuthWrapper(),
     );
   }
 }
@@ -61,22 +89,15 @@ class AuthWrapper extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final db = ref.watch(databaseProvider);
-    
-    return FutureBuilder(
-      future: (db.select(db.appSettings)..limit(1)).getSingleOrNull(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
-        }
-        
-        final hasSettings = snapshot.data != null;
-        if (hasSettings || ref.watch(authStateProvider)) {
-          return const HomeScreen();
-        } else {
-          return const LoginScreen();
-        }
-      },
-    );
+    final authStatus = ref.watch(authProvider);
+
+    switch (authStatus) {
+      case AuthStatus.authenticated:
+        return const HomeScreen();
+      case AuthStatus.unauthenticated:
+        return const LoginScreen();
+      case AuthStatus.authenticating:
+        return Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
   }
 }

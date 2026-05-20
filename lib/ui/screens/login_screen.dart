@@ -1,11 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sizer/sizer.dart';
-import '../../providers/app_providers.dart';
-import '../../providers/sync_provider.dart';
-import '../../database/app_database.dart';
-import 'package:drift/drift.dart' as drift;
-import '../widgets/banner_ad_widget.dart';
+import 'package:responsive_framework/responsive_framework.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../providers/auth_provider.dart';
+import '../theme.dart';
+import '../../services/auth_service.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -15,131 +15,289 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController(text: 'ta1kyn');
-  final _passwordController = TextEditingController(text: 'gurcan');
-  final _apiKeyController = TextEditingController(text: '4641-A08E-BE39-4503');
   bool _isLoading = false;
+  bool _showAppleButton = false;
 
-  Future<void> _login() async {
-    if (!_formKey.currentState!.validate()) return;
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isMobile = ResponsiveBreakpoints.of(context).isMobile;
+    
+    // Show Apple button on iOS devices
+    _showAppleButton = isMobile && Platform.isIOS;
 
-    setState(() => _isLoading = true);
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      body: SafeArea(
+        top: true,
+        bottom: true,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Center(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: isMobile ? double.infinity : 420),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: 16),
+                      // Beautiful Glowing Squircle framed Logo
+                      Center(
+                        child: Container(
+                          height: isMobile ? 100 : 130,
+                          width: isMobile ? 100 : 130,
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [AppTheme.primary, AppTheme.secondary],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(28),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppTheme.primary.withOpacity(0.15),
+                                blurRadius: 30,
+                                spreadRadius: 5,
+                              ),
+                            ],
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            padding: const EdgeInsets.all(12),
+                            child: Image.asset(
+                              'LogSummitLogo_WhiteBG.png',
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
 
-    try {
-      final xmlService = ref.read(qrzXmlServiceProvider);
-      final logbookService = ref.read(qrzLogbookServiceProvider);
-      final db = ref.read(databaseProvider);
+                      // App Title
+                      Text(
+                        'Log Summit',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.displayLarge?.copyWith(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          color: AppTheme.onSurface,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
 
-      // 1. Validate XML Auth
-      await xmlService.login(_usernameController.text, _passwordController.text);
+                      // Subtitle
+                      Text(
+                        'Premium Ham Radio Telemetry Logger',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontSize: 10.5,
+                          color: AppTheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 48),
 
-      // 2. Validate Logbook API Key
-      final status = await logbookService.getStatus(_apiKeyController.text);
-      if (status['RESULT'] != 'OK') {
-        throw Exception(status['REASON'] ?? 'Invalid API Key');
-      }
+                      // Main cockpit action panel
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: AppTheme.outlineVariant, width: 1.2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.02),
+                              blurRadius: 16,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              'WELCOME OPERATOR',
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                color: AppTheme.primary,
+                                fontSize: 9,
+                                letterSpacing: 2,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Establish link with cloud database or operate local station logging tools.',
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: AppTheme.onSurfaceVariant,
+                                fontSize: 9,
+                              ),
+                            ),
+                            const SizedBox(height: 32),
 
-      // 3. Save Settings
-      await db.into(db.appSettings).insert(
-        AppSettingsCompanion.insert(
-          qrzUsername: drift.Value(_usernameController.text),
-          logbookApiKey: drift.Value(_apiKeyController.text),
+                            // Google Button
+                            GestureDetector(
+                              onTap: _isLoading ? null : () => _signInGoogle(context),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 13),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(color: AppTheme.outline, width: 1.2),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.01),
+                                      blurRadius: 5,
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.login_rounded, color: AppTheme.primary, size: 14),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      'SIGN IN WITH GOOGLE',
+                                      style: theme.textTheme.labelLarge?.copyWith(
+                                        fontSize: 9.5,
+                                        color: AppTheme.primary,
+                                        letterSpacing: 1.2,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                            if (_showAppleButton) ...[
+                              const SizedBox(height: 16),
+                              // Apple Button
+                              GestureDetector(
+                                onTap: _isLoading ? null : () => _signInApple(context),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(vertical: 13),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.onSurface,
+                                    borderRadius: BorderRadius.circular(14),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppTheme.onSurface.withOpacity(0.2),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.apple_rounded, color: Colors.white, size: 14),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        'SIGN IN WITH APPLE',
+                                        style: theme.textTheme.labelLarge?.copyWith(
+                                          fontSize: 9.5,
+                                          color: Colors.white,
+                                          letterSpacing: 1.2,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+
+                      // Footer metadata info
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.lock_outline_rounded, size: 10, color: AppTheme.outline),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Secured via Supabase. No password required.',
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.labelMono.copyWith(
+                              fontSize: 7.5,
+                              color: AppTheme.outline,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         ),
-      );
+      ),
+    );
+  }
 
-      // Fetch all logs from QRZ after successful login
-      ref.read(syncProvider.notifier).fetchAndSyncAllLogs();
-
-      ref.read(authStateProvider.notifier).setAuthenticated(true);
+  Future<void> _signInGoogle(BuildContext context) async {
+    setState(() => _isLoading = true);
+    
+    try {
+      final result = await AuthService.signInWithGoogle();
+      
+      if (result.error != null) {
+        _showError(result.error!);
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      _showError('Failed to sign in: $e');
     } finally {
       setState(() => _isLoading = false);
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final isMobile = SizerUtil.deviceType == DeviceType.mobile;
+  Future<void> _signInApple(BuildContext context) async {
+    setState(() => _isLoading = true);
+    
+    try {
+      final result = await AuthService.signInWithApple();
+      
+      if (result.error != null) {
+        _showError(result.error!);
+      }
+    } catch (e) {
+      _showError('Failed to sign in: $e');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
 
-    return Scaffold(
-      body: SafeArea(
-        top: true,
-        bottom: false,
-        child: Column(
-          children: [
-            const BannerAdWidget(),
-            Expanded(
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.all(isMobile ? 6.w : 2.w),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: isMobile ? 100.w : 400),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Image.asset('HorizonQRZLogo_Transparent.png', height: isMobile ? 15.h : 20.h),
-                          SizedBox(height: 3.h),
-                          Text(
-                            'HorizonQRZ',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 6.h),
-                          TextFormField(
-                            controller: _usernameController,
-                            decoration: const InputDecoration(
-                              labelText: 'QRZ Username',
-                              prefixIcon: Icon(Icons.person),
-                            ),
-                            validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-                          ),
-                          SizedBox(height: 2.h),
-                          TextFormField(
-                            controller: _passwordController,
-                            obscureText: true,
-                            decoration: const InputDecoration(
-                              labelText: 'QRZ Password',
-                              prefixIcon: Icon(Icons.lock),
-                            ),
-                            validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-                          ),
-                          SizedBox(height: 2.h),
-                          TextFormField(
-                            controller: _apiKeyController,
-                            decoration: const InputDecoration(
-                              labelText: 'Logbook API Key',
-                              prefixIcon: Icon(Icons.vpn_key),
-                              helperText: 'Found in QRZ Logbook Settings',
-                            ),
-                            validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-                          ),
-                          SizedBox(height: 4.h),
-                          ElevatedButton(
-                            onPressed: _isLoading ? null : _login,
-                            child: _isLoading
-                                ? SizedBox(
-                                    width: 2.h,
-                                    height: 2.h,
-                                    child: const CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                  )
-                                : const Text('Connect to QRZ'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+  void _showError(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(
+          'Sign In Failed',
+          style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
         ),
+        content: Text(
+          message,
+          style: GoogleFonts.spaceGrotesk(),
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('OK'),
+          ),
+        ],
       ),
     );
   }

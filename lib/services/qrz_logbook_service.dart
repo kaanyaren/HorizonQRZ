@@ -6,7 +6,7 @@ class QrzLogbookService {
     contentType: 'application/x-www-form-urlencoded',
     responseType: ResponseType.plain,
     headers: {
-      'User-Agent': 'HorizonQRZ/1.0',
+      'User-Agent': 'LogSummit/1.0',
     },
   ));
 
@@ -17,7 +17,14 @@ class QrzLogbookService {
         'ACTION': 'STATUS',
       });
 
-      return _parseResponse(response.data);
+      final parsed = _parseResponse(response.data);
+      // Map to keys expected by DashboardScreen
+      return {
+        'qso_count': parsed['COUNT'] ?? '0',
+        'dxcc_count': parsed['DXCC'] ?? '0',
+        'confirmed_count': parsed['CONFIRMED'] ?? '0',
+        ...parsed,
+      };
     } catch (e) {
       rethrow;
     }
@@ -75,7 +82,7 @@ class QrzLogbookService {
     // But ADIF data can contain & and % and is often NOT properly encoded.
     
     // 1. Extract known keys using regex to avoid splitting by & inside ADIF
-    final keys = ['RESULT', 'REASON', 'COUNT', 'LOGID', 'KEY'];
+    final keys = ['RESULT', 'REASON', 'COUNT', 'LOGID', 'KEY', 'DXCC', 'CONFIRMED'];
     for (final key in keys) {
       final regExp = RegExp('$key=([^&]*)');
       final match = regExp.firstMatch(data);
@@ -94,7 +101,11 @@ class QrzLogbookService {
       var adifValue = data.substring(adifIndex + 5);
       
       // If ADIF is not the last field, we'd need to find the next &
-      // But in QRZ API FETCH it is usually the last.
+      final nextAmp = adifValue.indexOf('&');
+      if (nextAmp != -1) {
+        adifValue = adifValue.substring(0, nextAmp);
+      }
+
       // We'll try to decode it, but if it fails (due to raw % signs), use as is.
       try {
         result['ADIF'] = Uri.decodeComponent(adifValue.replaceAll('+', ' '));

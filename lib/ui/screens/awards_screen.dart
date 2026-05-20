@@ -1,9 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sizer/sizer.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import '../../providers/awards_provider.dart';
 import '../theme.dart';
 import '../widgets/instrument_card.dart';
+
+class AwardData {
+  final String title;
+  final String subtitle;
+  final int current;
+  final int total;
+  final Color accent;
+  final bool completed;
+  final String unitLabel;
+  final List<String> stats;
+  final List<String> labels;
+
+  const AwardData({
+    required this.title,
+    required this.subtitle,
+    required this.current,
+    required this.total,
+    required this.accent,
+    required this.completed,
+    required this.unitLabel,
+    required this.stats,
+    required this.labels,
+  });
+}
 
 class AwardsScreen extends ConsumerWidget {
   const AwardsScreen({super.key});
@@ -11,78 +35,27 @@ class AwardsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final isMobile = SizerUtil.deviceType == DeviceType.mobile;
-    final awardsAsync = ref.watch(awardsProvider);
+    final isMobile = ResponsiveBreakpoints.of(context).isMobile;
+    final awardsCount = ref.watch(awardsProvider);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: awardsAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, stack) => Center(child: Text('Error: $err')),
-          data: (awards) {
-            if (awards.isEmpty) {
-              return const Center(child: Text('No awards data available'));
-            }
-
-            return ListView(
-              padding: EdgeInsets.symmetric(horizontal: isMobile ? 4.w : 2.w),
-              children: [
-                SizedBox(height: 2.h),
-                Center(
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        'HorizonQRZLogo_Transparent.png',
-                        height: isMobile ? 8.h : 12.h,
-                        errorBuilder: (context, error, stackTrace) => Icon(
-                          Icons.military_tech,
-                          size: 8.h,
-                          color: AppTheme.primary,
-                        ),
-                      ),
-                      SizedBox(height: 1.h),
-                      Text(
-                        'Your QRZ.com Client',
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          letterSpacing: 1.5,
-                          color: AppTheme.onSurfaceVariant,
-                          fontSize: 8.sp,
-                        ),
-                      ),
-                    ],
+        bottom: false,
+        child: awardsCount == 0
+            ? const Center(child: Text('No awards data available'))
+            : ListView(
+                padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 8),
+                children: [
+                  const SizedBox(height: 8),
+                  Text(
+                    'AWARDS GALLERY',
+                    style: theme.textTheme.displayLarge?.copyWith(fontSize: 18),
                   ),
-                ),
-                SizedBox(height: 3.h),
-                Text(
-                  'AWARDS GALLERY',
-                  style: theme.textTheme.displayLarge?.copyWith(fontSize: 18.sp),
-                ),
-                SizedBox(height: 2.h),
-                if (isMobile || awards.length <= 1)
-                  ...awards.map((award) => Padding(
-                        padding: EdgeInsets.only(bottom: 2.h),
-                        child: _buildAwardCard(context, award, isMobile),
-                      ))
-                else
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: isMobile ? 1 : 2,
-                      crossAxisSpacing: 2.w,
-                      mainAxisSpacing: 2.h,
-                      childAspectRatio: 1.4,
-                    ),
-                    itemCount: awards.length,
-                    itemBuilder: (context, index) =>
-                        _buildAwardCard(context, awards[index], isMobile),
-                  ),
-                SizedBox(height: 4.h),
-              ],
-            );
-          },
-        ),
+                  const SizedBox(height: 16),
+                  const SizedBox(height: 32),
+                ],
+              ),
       ),
     );
   }
@@ -108,56 +81,56 @@ class AwardsScreen extends ConsumerWidget {
                       award.title,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        fontSize: 14.sp,
+                        fontSize: 14,
                       ),
                     ),
                     Text(
                       award.subtitle,
-                      style: theme.textTheme.labelLarge?.copyWith(fontSize: 7.sp),
+                      style: theme.textTheme.labelLarge?.copyWith(fontSize: 7),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.5.h),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: award.completed ? AppTheme.tertiary : AppTheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(isMobile ? 2.w : 1.w),
+                  borderRadius: BorderRadius.circular(isMobile ? 8 : 4),
                   border: Border.all(color: AppTheme.outlineVariant),
                 ),
                 child: Text(
                   award.completed ? 'COMPLETED' : 'ACTIVE',
                   style: theme.textTheme.labelLarge?.copyWith(
-                    fontSize: 7.sp,
+                    fontSize: 7,
                     color: award.completed ? Colors.white : AppTheme.onSurfaceVariant,
                   ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 2.h),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(award.unitLabel, style: theme.textTheme.labelLarge?.copyWith(fontSize: 8.sp)),
+              Text(award.unitLabel, style: theme.textTheme.labelLarge?.copyWith(fontSize: 8)),
               Text('${award.current} / ${award.total}',
-                  style: theme.textTheme.labelMono.copyWith(fontSize: 9.sp)),
+                  style: theme.textTheme.labelMono.copyWith(fontSize: 9)),
             ],
           ),
-          SizedBox(height: 0.5.h),
+          const SizedBox(height: 4),
           ClipRRect(
-            borderRadius: BorderRadius.circular(isMobile ? 2.w : 1.w),
+            borderRadius: BorderRadius.circular(isMobile ? 8 : 4),
             child: LinearProgressIndicator(
               value: progress,
               backgroundColor: AppTheme.surfaceVariant,
               color: award.accent,
-              minHeight: 0.8.h,
+              minHeight: 6,
             ),
           ),
-          SizedBox(height: 2.h),
+          const SizedBox(height: 16),
           const Divider(height: 1, color: AppTheme.outlineVariant),
-          SizedBox(height: 1.5.h),
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(award.stats.length, (index) {
@@ -165,11 +138,11 @@ class AwardsScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(award.labels[index],
-                      style: theme.textTheme.labelLarge?.copyWith(fontSize: 7.sp)),
+                      style: theme.textTheme.labelLarge?.copyWith(fontSize: 7)),
                   Text(
                     award.stats[index],
                     style: theme.textTheme.labelMono.copyWith(
-                      fontSize: 9.sp,
+                      fontSize: 9,
                       color: AppTheme.onSurface,
                     ),
                   ),

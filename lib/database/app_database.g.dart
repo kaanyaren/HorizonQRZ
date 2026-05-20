@@ -3,34 +3,20 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
-class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
+class $LocalQsosTable extends LocalQsos
+    with TableInfo<$LocalQsosTable, LocalQso> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $QsosTable(this.attachedDatabase, [this._alias]);
+  $LocalQsosTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
     'id',
     aliasedName,
     false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
-  );
-  static const VerificationMeta _qrzLogidMeta = const VerificationMeta(
-    'qrzLogid',
-  );
-  @override
-  late final GeneratedColumn<String> qrzLogid = GeneratedColumn<String>(
-    'qrz_logid',
-    aliasedName,
-    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _callsignMeta = const VerificationMeta(
     'callsign',
@@ -58,10 +44,28 @@ class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _timeOnMeta = const VerificationMeta('timeOn');
+  @override
+  late final GeneratedColumn<String> timeOn = GeneratedColumn<String>(
+    'time_on',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _bandMeta = const VerificationMeta('band');
   @override
   late final GeneratedColumn<String> band = GeneratedColumn<String>(
     'band',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _modeMeta = const VerificationMeta('mode');
+  @override
+  late final GeneratedColumn<String> mode = GeneratedColumn<String>(
+    'mode',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -75,15 +79,6 @@ class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-  );
-  static const VerificationMeta _modeMeta = const VerificationMeta('mode');
-  @override
-  late final GeneratedColumn<String> mode = GeneratedColumn<String>(
-    'mode',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
   );
   static const VerificationMeta _rstSentMeta = const VerificationMeta(
     'rstSent',
@@ -102,29 +97,6 @@ class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
   @override
   late final GeneratedColumn<String> rstRcvd = GeneratedColumn<String>(
     'rst_rcvd',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
-    'syncStatus',
-  );
-  @override
-  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
-    'sync_status',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant('pending'),
-  );
-  static const VerificationMeta _rawAdifMeta = const VerificationMeta(
-    'rawAdif',
-  );
-  @override
-  late final GeneratedColumn<String> rawAdif = GeneratedColumn<String>(
-    'raw_adif',
     aliasedName,
     true,
     type: DriftSqlType.string,
@@ -266,19 +238,157 @@ class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _contestIdMeta = const VerificationMeta(
+    'contestId',
+  );
+  @override
+  late final GeneratedColumn<String> contestId = GeneratedColumn<String>(
+    'contest_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _stxMeta = const VerificationMeta('stx');
+  @override
+  late final GeneratedColumn<String> stx = GeneratedColumn<String>(
+    'stx',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _srxMeta = const VerificationMeta('srx');
+  @override
+  late final GeneratedColumn<String> srx = GeneratedColumn<String>(
+    'srx',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _stxStringMeta = const VerificationMeta(
+    'stxString',
+  );
+  @override
+  late final GeneratedColumn<String> stxString = GeneratedColumn<String>(
+    'stx_string',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _srxStringMeta = const VerificationMeta(
+    'srxString',
+  );
+  @override
+  late final GeneratedColumn<String> srxString = GeneratedColumn<String>(
+    'srx_string',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _stationCallsignMeta = const VerificationMeta(
+    'stationCallsign',
+  );
+  @override
+  late final GeneratedColumn<String> stationCallsign = GeneratedColumn<String>(
+    'station_callsign',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _stationGridsquareMeta = const VerificationMeta(
+    'stationGridsquare',
+  );
+  @override
+  late final GeneratedColumn<String> stationGridsquare =
+      GeneratedColumn<String>(
+        'station_gridsquare',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _operatorMeta = const VerificationMeta(
+    'operator',
+  );
+  @override
+  late final GeneratedColumn<String> operator = GeneratedColumn<String>(
+    'operator',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _userUuidMeta = const VerificationMeta(
+    'userUuid',
+  );
+  @override
+  late final GeneratedColumn<String> userUuid = GeneratedColumn<String>(
+    'user_uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _supabaseIdMeta = const VerificationMeta(
+    'supabaseId',
+  );
+  @override
+  late final GeneratedColumn<String> supabaseId = GeneratedColumn<String>(
+    'supabase_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _qrzLogIdMeta = const VerificationMeta(
+    'qrzLogId',
+  );
+  @override
+  late final GeneratedColumn<String> qrzLogId = GeneratedColumn<String>(
+    'qrz_log_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _syncVersionMeta = const VerificationMeta(
+    'syncVersion',
+  );
+  @override
+  late final GeneratedColumn<int> syncVersion = GeneratedColumn<int>(
+    'sync_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  @override
+  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
+    'sync_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
-    qrzLogid,
     callsign,
     qsoDate,
+    timeOn,
     band,
-    freq,
     mode,
+    freq,
     rstSent,
     rstRcvd,
-    syncStatus,
-    rawAdif,
     name,
     qth,
     country,
@@ -293,27 +403,36 @@ class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
     sig,
     state,
     cqz,
+    contestId,
+    stx,
+    srx,
+    stxString,
+    srxString,
+    stationCallsign,
+    stationGridsquare,
+    operator,
+    userUuid,
+    supabaseId,
+    qrzLogId,
+    syncVersion,
+    syncStatus,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'qsos';
+  static const String $name = 'local_qsos';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Qso> instance, {
+    Insertable<LocalQso> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('qrz_logid')) {
-      context.handle(
-        _qrzLogidMeta,
-        qrzLogid.isAcceptableOrUnknown(data['qrz_logid']!, _qrzLogidMeta),
-      );
+    } else if (isInserting) {
+      context.missing(_idMeta);
     }
     if (data.containsKey('callsign')) {
       context.handle(
@@ -331,6 +450,14 @@ class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
     } else if (isInserting) {
       context.missing(_qsoDateMeta);
     }
+    if (data.containsKey('time_on')) {
+      context.handle(
+        _timeOnMeta,
+        timeOn.isAcceptableOrUnknown(data['time_on']!, _timeOnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_timeOnMeta);
+    }
     if (data.containsKey('band')) {
       context.handle(
         _bandMeta,
@@ -339,12 +466,6 @@ class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
     } else if (isInserting) {
       context.missing(_bandMeta);
     }
-    if (data.containsKey('freq')) {
-      context.handle(
-        _freqMeta,
-        freq.isAcceptableOrUnknown(data['freq']!, _freqMeta),
-      );
-    }
     if (data.containsKey('mode')) {
       context.handle(
         _modeMeta,
@@ -352,6 +473,12 @@ class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
       );
     } else if (isInserting) {
       context.missing(_modeMeta);
+    }
+    if (data.containsKey('freq')) {
+      context.handle(
+        _freqMeta,
+        freq.isAcceptableOrUnknown(data['freq']!, _freqMeta),
+      );
     }
     if (data.containsKey('rst_sent')) {
       context.handle(
@@ -363,18 +490,6 @@ class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
       context.handle(
         _rstRcvdMeta,
         rstRcvd.isAcceptableOrUnknown(data['rst_rcvd']!, _rstRcvdMeta),
-      );
-    }
-    if (data.containsKey('sync_status')) {
-      context.handle(
-        _syncStatusMeta,
-        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
-      );
-    }
-    if (data.containsKey('raw_adif')) {
-      context.handle(
-        _rawAdifMeta,
-        rawAdif.isAcceptableOrUnknown(data['raw_adif']!, _rawAdifMeta),
       );
     }
     if (data.containsKey('name')) {
@@ -461,23 +576,116 @@ class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
         cqz.isAcceptableOrUnknown(data['cqz']!, _cqzMeta),
       );
     }
+    if (data.containsKey('contest_id')) {
+      context.handle(
+        _contestIdMeta,
+        contestId.isAcceptableOrUnknown(data['contest_id']!, _contestIdMeta),
+      );
+    }
+    if (data.containsKey('stx')) {
+      context.handle(
+        _stxMeta,
+        stx.isAcceptableOrUnknown(data['stx']!, _stxMeta),
+      );
+    }
+    if (data.containsKey('srx')) {
+      context.handle(
+        _srxMeta,
+        srx.isAcceptableOrUnknown(data['srx']!, _srxMeta),
+      );
+    }
+    if (data.containsKey('stx_string')) {
+      context.handle(
+        _stxStringMeta,
+        stxString.isAcceptableOrUnknown(data['stx_string']!, _stxStringMeta),
+      );
+    }
+    if (data.containsKey('srx_string')) {
+      context.handle(
+        _srxStringMeta,
+        srxString.isAcceptableOrUnknown(data['srx_string']!, _srxStringMeta),
+      );
+    }
+    if (data.containsKey('station_callsign')) {
+      context.handle(
+        _stationCallsignMeta,
+        stationCallsign.isAcceptableOrUnknown(
+          data['station_callsign']!,
+          _stationCallsignMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_stationCallsignMeta);
+    }
+    if (data.containsKey('station_gridsquare')) {
+      context.handle(
+        _stationGridsquareMeta,
+        stationGridsquare.isAcceptableOrUnknown(
+          data['station_gridsquare']!,
+          _stationGridsquareMeta,
+        ),
+      );
+    }
+    if (data.containsKey('operator')) {
+      context.handle(
+        _operatorMeta,
+        operator.isAcceptableOrUnknown(data['operator']!, _operatorMeta),
+      );
+    }
+    if (data.containsKey('user_uuid')) {
+      context.handle(
+        _userUuidMeta,
+        userUuid.isAcceptableOrUnknown(data['user_uuid']!, _userUuidMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userUuidMeta);
+    }
+    if (data.containsKey('supabase_id')) {
+      context.handle(
+        _supabaseIdMeta,
+        supabaseId.isAcceptableOrUnknown(data['supabase_id']!, _supabaseIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_supabaseIdMeta);
+    }
+    if (data.containsKey('qrz_log_id')) {
+      context.handle(
+        _qrzLogIdMeta,
+        qrzLogId.isAcceptableOrUnknown(data['qrz_log_id']!, _qrzLogIdMeta),
+      );
+    }
+    if (data.containsKey('sync_version')) {
+      context.handle(
+        _syncVersionMeta,
+        syncVersion.isAcceptableOrUnknown(
+          data['sync_version']!,
+          _syncVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_syncVersionMeta);
+    }
+    if (data.containsKey('sync_status')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_syncStatusMeta);
+    }
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => const {};
   @override
-  Qso map(Map<String, dynamic> data, {String? tablePrefix}) {
+  LocalQso map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Qso(
+    return LocalQso(
       id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
+        DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
-      qrzLogid: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}qrz_logid'],
-      ),
       callsign: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}callsign'],
@@ -486,18 +694,22 @@ class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}qso_date'],
       )!,
+      timeOn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}time_on'],
+      )!,
       band: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}band'],
+      )!,
+      mode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mode'],
       )!,
       freq: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}freq'],
       ),
-      mode: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}mode'],
-      )!,
       rstSent: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}rst_sent'],
@@ -505,14 +717,6 @@ class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
       rstRcvd: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}rst_rcvd'],
-      ),
-      syncStatus: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}sync_status'],
-      )!,
-      rawAdif: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}raw_adif'],
       ),
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -570,27 +774,77 @@ class $QsosTable extends Qsos with TableInfo<$QsosTable, Qso> {
         DriftSqlType.string,
         data['${effectivePrefix}cqz'],
       ),
+      contestId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}contest_id'],
+      ),
+      stx: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}stx'],
+      ),
+      srx: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}srx'],
+      ),
+      stxString: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}stx_string'],
+      ),
+      srxString: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}srx_string'],
+      ),
+      stationCallsign: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}station_callsign'],
+      )!,
+      stationGridsquare: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}station_gridsquare'],
+      ),
+      operator: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}operator'],
+      ),
+      userUuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_uuid'],
+      )!,
+      supabaseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}supabase_id'],
+      )!,
+      qrzLogId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}qrz_log_id'],
+      ),
+      syncVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sync_version'],
+      )!,
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_status'],
+      )!,
     );
   }
 
   @override
-  $QsosTable createAlias(String alias) {
-    return $QsosTable(attachedDatabase, alias);
+  $LocalQsosTable createAlias(String alias) {
+    return $LocalQsosTable(attachedDatabase, alias);
   }
 }
 
-class Qso extends DataClass implements Insertable<Qso> {
-  final int id;
-  final String? qrzLogid;
+class LocalQso extends DataClass implements Insertable<LocalQso> {
+  final String id;
   final String callsign;
   final DateTime qsoDate;
+  final String timeOn;
   final String band;
-  final String? freq;
   final String mode;
+  final String? freq;
   final String? rstSent;
   final String? rstRcvd;
-  final String syncStatus;
-  final String? rawAdif;
   final String? name;
   final String? qth;
   final String? country;
@@ -605,18 +859,29 @@ class Qso extends DataClass implements Insertable<Qso> {
   final String? sig;
   final String? state;
   final String? cqz;
-  const Qso({
+  final String? contestId;
+  final String? stx;
+  final String? srx;
+  final String? stxString;
+  final String? srxString;
+  final String stationCallsign;
+  final String? stationGridsquare;
+  final String? operator;
+  final String userUuid;
+  final String supabaseId;
+  final String? qrzLogId;
+  final int syncVersion;
+  final String syncStatus;
+  const LocalQso({
     required this.id,
-    this.qrzLogid,
     required this.callsign,
     required this.qsoDate,
+    required this.timeOn,
     required this.band,
-    this.freq,
     required this.mode,
+    this.freq,
     this.rstSent,
     this.rstRcvd,
-    required this.syncStatus,
-    this.rawAdif,
     this.name,
     this.qth,
     this.country,
@@ -631,30 +896,37 @@ class Qso extends DataClass implements Insertable<Qso> {
     this.sig,
     this.state,
     this.cqz,
+    this.contestId,
+    this.stx,
+    this.srx,
+    this.stxString,
+    this.srxString,
+    required this.stationCallsign,
+    this.stationGridsquare,
+    this.operator,
+    required this.userUuid,
+    required this.supabaseId,
+    this.qrzLogId,
+    required this.syncVersion,
+    required this.syncStatus,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    if (!nullToAbsent || qrzLogid != null) {
-      map['qrz_logid'] = Variable<String>(qrzLogid);
-    }
+    map['id'] = Variable<String>(id);
     map['callsign'] = Variable<String>(callsign);
     map['qso_date'] = Variable<DateTime>(qsoDate);
+    map['time_on'] = Variable<String>(timeOn);
     map['band'] = Variable<String>(band);
+    map['mode'] = Variable<String>(mode);
     if (!nullToAbsent || freq != null) {
       map['freq'] = Variable<String>(freq);
     }
-    map['mode'] = Variable<String>(mode);
     if (!nullToAbsent || rstSent != null) {
       map['rst_sent'] = Variable<String>(rstSent);
     }
     if (!nullToAbsent || rstRcvd != null) {
       map['rst_rcvd'] = Variable<String>(rstRcvd);
-    }
-    map['sync_status'] = Variable<String>(syncStatus);
-    if (!nullToAbsent || rawAdif != null) {
-      map['raw_adif'] = Variable<String>(rawAdif);
     }
     if (!nullToAbsent || name != null) {
       map['name'] = Variable<String>(name);
@@ -698,30 +970,53 @@ class Qso extends DataClass implements Insertable<Qso> {
     if (!nullToAbsent || cqz != null) {
       map['cqz'] = Variable<String>(cqz);
     }
+    if (!nullToAbsent || contestId != null) {
+      map['contest_id'] = Variable<String>(contestId);
+    }
+    if (!nullToAbsent || stx != null) {
+      map['stx'] = Variable<String>(stx);
+    }
+    if (!nullToAbsent || srx != null) {
+      map['srx'] = Variable<String>(srx);
+    }
+    if (!nullToAbsent || stxString != null) {
+      map['stx_string'] = Variable<String>(stxString);
+    }
+    if (!nullToAbsent || srxString != null) {
+      map['srx_string'] = Variable<String>(srxString);
+    }
+    map['station_callsign'] = Variable<String>(stationCallsign);
+    if (!nullToAbsent || stationGridsquare != null) {
+      map['station_gridsquare'] = Variable<String>(stationGridsquare);
+    }
+    if (!nullToAbsent || operator != null) {
+      map['operator'] = Variable<String>(operator);
+    }
+    map['user_uuid'] = Variable<String>(userUuid);
+    map['supabase_id'] = Variable<String>(supabaseId);
+    if (!nullToAbsent || qrzLogId != null) {
+      map['qrz_log_id'] = Variable<String>(qrzLogId);
+    }
+    map['sync_version'] = Variable<int>(syncVersion);
+    map['sync_status'] = Variable<String>(syncStatus);
     return map;
   }
 
-  QsosCompanion toCompanion(bool nullToAbsent) {
-    return QsosCompanion(
+  LocalQsosCompanion toCompanion(bool nullToAbsent) {
+    return LocalQsosCompanion(
       id: Value(id),
-      qrzLogid: qrzLogid == null && nullToAbsent
-          ? const Value.absent()
-          : Value(qrzLogid),
       callsign: Value(callsign),
       qsoDate: Value(qsoDate),
+      timeOn: Value(timeOn),
       band: Value(band),
-      freq: freq == null && nullToAbsent ? const Value.absent() : Value(freq),
       mode: Value(mode),
+      freq: freq == null && nullToAbsent ? const Value.absent() : Value(freq),
       rstSent: rstSent == null && nullToAbsent
           ? const Value.absent()
           : Value(rstSent),
       rstRcvd: rstRcvd == null && nullToAbsent
           ? const Value.absent()
           : Value(rstRcvd),
-      syncStatus: Value(syncStatus),
-      rawAdif: rawAdif == null && nullToAbsent
-          ? const Value.absent()
-          : Value(rawAdif),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
       qth: qth == null && nullToAbsent ? const Value.absent() : Value(qth),
       country: country == null && nullToAbsent
@@ -752,26 +1047,49 @@ class Qso extends DataClass implements Insertable<Qso> {
           ? const Value.absent()
           : Value(state),
       cqz: cqz == null && nullToAbsent ? const Value.absent() : Value(cqz),
+      contestId: contestId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(contestId),
+      stx: stx == null && nullToAbsent ? const Value.absent() : Value(stx),
+      srx: srx == null && nullToAbsent ? const Value.absent() : Value(srx),
+      stxString: stxString == null && nullToAbsent
+          ? const Value.absent()
+          : Value(stxString),
+      srxString: srxString == null && nullToAbsent
+          ? const Value.absent()
+          : Value(srxString),
+      stationCallsign: Value(stationCallsign),
+      stationGridsquare: stationGridsquare == null && nullToAbsent
+          ? const Value.absent()
+          : Value(stationGridsquare),
+      operator: operator == null && nullToAbsent
+          ? const Value.absent()
+          : Value(operator),
+      userUuid: Value(userUuid),
+      supabaseId: Value(supabaseId),
+      qrzLogId: qrzLogId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(qrzLogId),
+      syncVersion: Value(syncVersion),
+      syncStatus: Value(syncStatus),
     );
   }
 
-  factory Qso.fromJson(
+  factory LocalQso.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Qso(
-      id: serializer.fromJson<int>(json['id']),
-      qrzLogid: serializer.fromJson<String?>(json['qrzLogid']),
+    return LocalQso(
+      id: serializer.fromJson<String>(json['id']),
       callsign: serializer.fromJson<String>(json['callsign']),
       qsoDate: serializer.fromJson<DateTime>(json['qsoDate']),
+      timeOn: serializer.fromJson<String>(json['timeOn']),
       band: serializer.fromJson<String>(json['band']),
-      freq: serializer.fromJson<String?>(json['freq']),
       mode: serializer.fromJson<String>(json['mode']),
+      freq: serializer.fromJson<String?>(json['freq']),
       rstSent: serializer.fromJson<String?>(json['rstSent']),
       rstRcvd: serializer.fromJson<String?>(json['rstRcvd']),
-      syncStatus: serializer.fromJson<String>(json['syncStatus']),
-      rawAdif: serializer.fromJson<String?>(json['rawAdif']),
       name: serializer.fromJson<String?>(json['name']),
       qth: serializer.fromJson<String?>(json['qth']),
       country: serializer.fromJson<String?>(json['country']),
@@ -786,23 +1104,36 @@ class Qso extends DataClass implements Insertable<Qso> {
       sig: serializer.fromJson<String?>(json['sig']),
       state: serializer.fromJson<String?>(json['state']),
       cqz: serializer.fromJson<String?>(json['cqz']),
+      contestId: serializer.fromJson<String?>(json['contestId']),
+      stx: serializer.fromJson<String?>(json['stx']),
+      srx: serializer.fromJson<String?>(json['srx']),
+      stxString: serializer.fromJson<String?>(json['stxString']),
+      srxString: serializer.fromJson<String?>(json['srxString']),
+      stationCallsign: serializer.fromJson<String>(json['stationCallsign']),
+      stationGridsquare: serializer.fromJson<String?>(
+        json['stationGridsquare'],
+      ),
+      operator: serializer.fromJson<String?>(json['operator']),
+      userUuid: serializer.fromJson<String>(json['userUuid']),
+      supabaseId: serializer.fromJson<String>(json['supabaseId']),
+      qrzLogId: serializer.fromJson<String?>(json['qrzLogId']),
+      syncVersion: serializer.fromJson<int>(json['syncVersion']),
+      syncStatus: serializer.fromJson<String>(json['syncStatus']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'qrzLogid': serializer.toJson<String?>(qrzLogid),
+      'id': serializer.toJson<String>(id),
       'callsign': serializer.toJson<String>(callsign),
       'qsoDate': serializer.toJson<DateTime>(qsoDate),
+      'timeOn': serializer.toJson<String>(timeOn),
       'band': serializer.toJson<String>(band),
-      'freq': serializer.toJson<String?>(freq),
       'mode': serializer.toJson<String>(mode),
+      'freq': serializer.toJson<String?>(freq),
       'rstSent': serializer.toJson<String?>(rstSent),
       'rstRcvd': serializer.toJson<String?>(rstRcvd),
-      'syncStatus': serializer.toJson<String>(syncStatus),
-      'rawAdif': serializer.toJson<String?>(rawAdif),
       'name': serializer.toJson<String?>(name),
       'qth': serializer.toJson<String?>(qth),
       'country': serializer.toJson<String?>(country),
@@ -817,21 +1148,32 @@ class Qso extends DataClass implements Insertable<Qso> {
       'sig': serializer.toJson<String?>(sig),
       'state': serializer.toJson<String?>(state),
       'cqz': serializer.toJson<String?>(cqz),
+      'contestId': serializer.toJson<String?>(contestId),
+      'stx': serializer.toJson<String?>(stx),
+      'srx': serializer.toJson<String?>(srx),
+      'stxString': serializer.toJson<String?>(stxString),
+      'srxString': serializer.toJson<String?>(srxString),
+      'stationCallsign': serializer.toJson<String>(stationCallsign),
+      'stationGridsquare': serializer.toJson<String?>(stationGridsquare),
+      'operator': serializer.toJson<String?>(operator),
+      'userUuid': serializer.toJson<String>(userUuid),
+      'supabaseId': serializer.toJson<String>(supabaseId),
+      'qrzLogId': serializer.toJson<String?>(qrzLogId),
+      'syncVersion': serializer.toJson<int>(syncVersion),
+      'syncStatus': serializer.toJson<String>(syncStatus),
     };
   }
 
-  Qso copyWith({
-    int? id,
-    Value<String?> qrzLogid = const Value.absent(),
+  LocalQso copyWith({
+    String? id,
     String? callsign,
     DateTime? qsoDate,
+    String? timeOn,
     String? band,
-    Value<String?> freq = const Value.absent(),
     String? mode,
+    Value<String?> freq = const Value.absent(),
     Value<String?> rstSent = const Value.absent(),
     Value<String?> rstRcvd = const Value.absent(),
-    String? syncStatus,
-    Value<String?> rawAdif = const Value.absent(),
     Value<String?> name = const Value.absent(),
     Value<String?> qth = const Value.absent(),
     Value<String?> country = const Value.absent(),
@@ -846,18 +1188,29 @@ class Qso extends DataClass implements Insertable<Qso> {
     Value<String?> sig = const Value.absent(),
     Value<String?> state = const Value.absent(),
     Value<String?> cqz = const Value.absent(),
-  }) => Qso(
+    Value<String?> contestId = const Value.absent(),
+    Value<String?> stx = const Value.absent(),
+    Value<String?> srx = const Value.absent(),
+    Value<String?> stxString = const Value.absent(),
+    Value<String?> srxString = const Value.absent(),
+    String? stationCallsign,
+    Value<String?> stationGridsquare = const Value.absent(),
+    Value<String?> operator = const Value.absent(),
+    String? userUuid,
+    String? supabaseId,
+    Value<String?> qrzLogId = const Value.absent(),
+    int? syncVersion,
+    String? syncStatus,
+  }) => LocalQso(
     id: id ?? this.id,
-    qrzLogid: qrzLogid.present ? qrzLogid.value : this.qrzLogid,
     callsign: callsign ?? this.callsign,
     qsoDate: qsoDate ?? this.qsoDate,
+    timeOn: timeOn ?? this.timeOn,
     band: band ?? this.band,
-    freq: freq.present ? freq.value : this.freq,
     mode: mode ?? this.mode,
+    freq: freq.present ? freq.value : this.freq,
     rstSent: rstSent.present ? rstSent.value : this.rstSent,
     rstRcvd: rstRcvd.present ? rstRcvd.value : this.rstRcvd,
-    syncStatus: syncStatus ?? this.syncStatus,
-    rawAdif: rawAdif.present ? rawAdif.value : this.rawAdif,
     name: name.present ? name.value : this.name,
     qth: qth.present ? qth.value : this.qth,
     country: country.present ? country.value : this.country,
@@ -872,22 +1225,33 @@ class Qso extends DataClass implements Insertable<Qso> {
     sig: sig.present ? sig.value : this.sig,
     state: state.present ? state.value : this.state,
     cqz: cqz.present ? cqz.value : this.cqz,
+    contestId: contestId.present ? contestId.value : this.contestId,
+    stx: stx.present ? stx.value : this.stx,
+    srx: srx.present ? srx.value : this.srx,
+    stxString: stxString.present ? stxString.value : this.stxString,
+    srxString: srxString.present ? srxString.value : this.srxString,
+    stationCallsign: stationCallsign ?? this.stationCallsign,
+    stationGridsquare: stationGridsquare.present
+        ? stationGridsquare.value
+        : this.stationGridsquare,
+    operator: operator.present ? operator.value : this.operator,
+    userUuid: userUuid ?? this.userUuid,
+    supabaseId: supabaseId ?? this.supabaseId,
+    qrzLogId: qrzLogId.present ? qrzLogId.value : this.qrzLogId,
+    syncVersion: syncVersion ?? this.syncVersion,
+    syncStatus: syncStatus ?? this.syncStatus,
   );
-  Qso copyWithCompanion(QsosCompanion data) {
-    return Qso(
+  LocalQso copyWithCompanion(LocalQsosCompanion data) {
+    return LocalQso(
       id: data.id.present ? data.id.value : this.id,
-      qrzLogid: data.qrzLogid.present ? data.qrzLogid.value : this.qrzLogid,
       callsign: data.callsign.present ? data.callsign.value : this.callsign,
       qsoDate: data.qsoDate.present ? data.qsoDate.value : this.qsoDate,
+      timeOn: data.timeOn.present ? data.timeOn.value : this.timeOn,
       band: data.band.present ? data.band.value : this.band,
-      freq: data.freq.present ? data.freq.value : this.freq,
       mode: data.mode.present ? data.mode.value : this.mode,
+      freq: data.freq.present ? data.freq.value : this.freq,
       rstSent: data.rstSent.present ? data.rstSent.value : this.rstSent,
       rstRcvd: data.rstRcvd.present ? data.rstRcvd.value : this.rstRcvd,
-      syncStatus: data.syncStatus.present
-          ? data.syncStatus.value
-          : this.syncStatus,
-      rawAdif: data.rawAdif.present ? data.rawAdif.value : this.rawAdif,
       name: data.name.present ? data.name.value : this.name,
       qth: data.qth.present ? data.qth.value : this.qth,
       country: data.country.present ? data.country.value : this.country,
@@ -904,23 +1268,44 @@ class Qso extends DataClass implements Insertable<Qso> {
       sig: data.sig.present ? data.sig.value : this.sig,
       state: data.state.present ? data.state.value : this.state,
       cqz: data.cqz.present ? data.cqz.value : this.cqz,
+      contestId: data.contestId.present ? data.contestId.value : this.contestId,
+      stx: data.stx.present ? data.stx.value : this.stx,
+      srx: data.srx.present ? data.srx.value : this.srx,
+      stxString: data.stxString.present ? data.stxString.value : this.stxString,
+      srxString: data.srxString.present ? data.srxString.value : this.srxString,
+      stationCallsign: data.stationCallsign.present
+          ? data.stationCallsign.value
+          : this.stationCallsign,
+      stationGridsquare: data.stationGridsquare.present
+          ? data.stationGridsquare.value
+          : this.stationGridsquare,
+      operator: data.operator.present ? data.operator.value : this.operator,
+      userUuid: data.userUuid.present ? data.userUuid.value : this.userUuid,
+      supabaseId: data.supabaseId.present
+          ? data.supabaseId.value
+          : this.supabaseId,
+      qrzLogId: data.qrzLogId.present ? data.qrzLogId.value : this.qrzLogId,
+      syncVersion: data.syncVersion.present
+          ? data.syncVersion.value
+          : this.syncVersion,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('Qso(')
+    return (StringBuffer('LocalQso(')
           ..write('id: $id, ')
-          ..write('qrzLogid: $qrzLogid, ')
           ..write('callsign: $callsign, ')
           ..write('qsoDate: $qsoDate, ')
+          ..write('timeOn: $timeOn, ')
           ..write('band: $band, ')
-          ..write('freq: $freq, ')
           ..write('mode: $mode, ')
+          ..write('freq: $freq, ')
           ..write('rstSent: $rstSent, ')
           ..write('rstRcvd: $rstRcvd, ')
-          ..write('syncStatus: $syncStatus, ')
-          ..write('rawAdif: $rawAdif, ')
           ..write('name: $name, ')
           ..write('qth: $qth, ')
           ..write('country: $country, ')
@@ -934,7 +1319,20 @@ class Qso extends DataClass implements Insertable<Qso> {
           ..write('mySig: $mySig, ')
           ..write('sig: $sig, ')
           ..write('state: $state, ')
-          ..write('cqz: $cqz')
+          ..write('cqz: $cqz, ')
+          ..write('contestId: $contestId, ')
+          ..write('stx: $stx, ')
+          ..write('srx: $srx, ')
+          ..write('stxString: $stxString, ')
+          ..write('srxString: $srxString, ')
+          ..write('stationCallsign: $stationCallsign, ')
+          ..write('stationGridsquare: $stationGridsquare, ')
+          ..write('operator: $operator, ')
+          ..write('userUuid: $userUuid, ')
+          ..write('supabaseId: $supabaseId, ')
+          ..write('qrzLogId: $qrzLogId, ')
+          ..write('syncVersion: $syncVersion, ')
+          ..write('syncStatus: $syncStatus')
           ..write(')'))
         .toString();
   }
@@ -942,16 +1340,14 @@ class Qso extends DataClass implements Insertable<Qso> {
   @override
   int get hashCode => Object.hashAll([
     id,
-    qrzLogid,
     callsign,
     qsoDate,
+    timeOn,
     band,
-    freq,
     mode,
+    freq,
     rstSent,
     rstRcvd,
-    syncStatus,
-    rawAdif,
     name,
     qth,
     country,
@@ -966,22 +1362,33 @@ class Qso extends DataClass implements Insertable<Qso> {
     sig,
     state,
     cqz,
+    contestId,
+    stx,
+    srx,
+    stxString,
+    srxString,
+    stationCallsign,
+    stationGridsquare,
+    operator,
+    userUuid,
+    supabaseId,
+    qrzLogId,
+    syncVersion,
+    syncStatus,
   ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Qso &&
+      (other is LocalQso &&
           other.id == this.id &&
-          other.qrzLogid == this.qrzLogid &&
           other.callsign == this.callsign &&
           other.qsoDate == this.qsoDate &&
+          other.timeOn == this.timeOn &&
           other.band == this.band &&
-          other.freq == this.freq &&
           other.mode == this.mode &&
+          other.freq == this.freq &&
           other.rstSent == this.rstSent &&
           other.rstRcvd == this.rstRcvd &&
-          other.syncStatus == this.syncStatus &&
-          other.rawAdif == this.rawAdif &&
           other.name == this.name &&
           other.qth == this.qth &&
           other.country == this.country &&
@@ -995,21 +1402,32 @@ class Qso extends DataClass implements Insertable<Qso> {
           other.mySig == this.mySig &&
           other.sig == this.sig &&
           other.state == this.state &&
-          other.cqz == this.cqz);
+          other.cqz == this.cqz &&
+          other.contestId == this.contestId &&
+          other.stx == this.stx &&
+          other.srx == this.srx &&
+          other.stxString == this.stxString &&
+          other.srxString == this.srxString &&
+          other.stationCallsign == this.stationCallsign &&
+          other.stationGridsquare == this.stationGridsquare &&
+          other.operator == this.operator &&
+          other.userUuid == this.userUuid &&
+          other.supabaseId == this.supabaseId &&
+          other.qrzLogId == this.qrzLogId &&
+          other.syncVersion == this.syncVersion &&
+          other.syncStatus == this.syncStatus);
 }
 
-class QsosCompanion extends UpdateCompanion<Qso> {
-  final Value<int> id;
-  final Value<String?> qrzLogid;
+class LocalQsosCompanion extends UpdateCompanion<LocalQso> {
+  final Value<String> id;
   final Value<String> callsign;
   final Value<DateTime> qsoDate;
+  final Value<String> timeOn;
   final Value<String> band;
-  final Value<String?> freq;
   final Value<String> mode;
+  final Value<String?> freq;
   final Value<String?> rstSent;
   final Value<String?> rstRcvd;
-  final Value<String> syncStatus;
-  final Value<String?> rawAdif;
   final Value<String?> name;
   final Value<String?> qth;
   final Value<String?> country;
@@ -1024,18 +1442,30 @@ class QsosCompanion extends UpdateCompanion<Qso> {
   final Value<String?> sig;
   final Value<String?> state;
   final Value<String?> cqz;
-  const QsosCompanion({
+  final Value<String?> contestId;
+  final Value<String?> stx;
+  final Value<String?> srx;
+  final Value<String?> stxString;
+  final Value<String?> srxString;
+  final Value<String> stationCallsign;
+  final Value<String?> stationGridsquare;
+  final Value<String?> operator;
+  final Value<String> userUuid;
+  final Value<String> supabaseId;
+  final Value<String?> qrzLogId;
+  final Value<int> syncVersion;
+  final Value<String> syncStatus;
+  final Value<int> rowid;
+  const LocalQsosCompanion({
     this.id = const Value.absent(),
-    this.qrzLogid = const Value.absent(),
     this.callsign = const Value.absent(),
     this.qsoDate = const Value.absent(),
+    this.timeOn = const Value.absent(),
     this.band = const Value.absent(),
-    this.freq = const Value.absent(),
     this.mode = const Value.absent(),
+    this.freq = const Value.absent(),
     this.rstSent = const Value.absent(),
     this.rstRcvd = const Value.absent(),
-    this.syncStatus = const Value.absent(),
-    this.rawAdif = const Value.absent(),
     this.name = const Value.absent(),
     this.qth = const Value.absent(),
     this.country = const Value.absent(),
@@ -1050,19 +1480,31 @@ class QsosCompanion extends UpdateCompanion<Qso> {
     this.sig = const Value.absent(),
     this.state = const Value.absent(),
     this.cqz = const Value.absent(),
+    this.contestId = const Value.absent(),
+    this.stx = const Value.absent(),
+    this.srx = const Value.absent(),
+    this.stxString = const Value.absent(),
+    this.srxString = const Value.absent(),
+    this.stationCallsign = const Value.absent(),
+    this.stationGridsquare = const Value.absent(),
+    this.operator = const Value.absent(),
+    this.userUuid = const Value.absent(),
+    this.supabaseId = const Value.absent(),
+    this.qrzLogId = const Value.absent(),
+    this.syncVersion = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
-  QsosCompanion.insert({
-    this.id = const Value.absent(),
-    this.qrzLogid = const Value.absent(),
+  LocalQsosCompanion.insert({
+    required String id,
     required String callsign,
     required DateTime qsoDate,
+    required String timeOn,
     required String band,
-    this.freq = const Value.absent(),
     required String mode,
+    this.freq = const Value.absent(),
     this.rstSent = const Value.absent(),
     this.rstRcvd = const Value.absent(),
-    this.syncStatus = const Value.absent(),
-    this.rawAdif = const Value.absent(),
     this.name = const Value.absent(),
     this.qth = const Value.absent(),
     this.country = const Value.absent(),
@@ -1077,22 +1519,41 @@ class QsosCompanion extends UpdateCompanion<Qso> {
     this.sig = const Value.absent(),
     this.state = const Value.absent(),
     this.cqz = const Value.absent(),
-  }) : callsign = Value(callsign),
+    this.contestId = const Value.absent(),
+    this.stx = const Value.absent(),
+    this.srx = const Value.absent(),
+    this.stxString = const Value.absent(),
+    this.srxString = const Value.absent(),
+    required String stationCallsign,
+    this.stationGridsquare = const Value.absent(),
+    this.operator = const Value.absent(),
+    required String userUuid,
+    required String supabaseId,
+    this.qrzLogId = const Value.absent(),
+    required int syncVersion,
+    required String syncStatus,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       callsign = Value(callsign),
        qsoDate = Value(qsoDate),
+       timeOn = Value(timeOn),
        band = Value(band),
-       mode = Value(mode);
-  static Insertable<Qso> custom({
-    Expression<int>? id,
-    Expression<String>? qrzLogid,
+       mode = Value(mode),
+       stationCallsign = Value(stationCallsign),
+       userUuid = Value(userUuid),
+       supabaseId = Value(supabaseId),
+       syncVersion = Value(syncVersion),
+       syncStatus = Value(syncStatus);
+  static Insertable<LocalQso> custom({
+    Expression<String>? id,
     Expression<String>? callsign,
     Expression<DateTime>? qsoDate,
+    Expression<String>? timeOn,
     Expression<String>? band,
-    Expression<String>? freq,
     Expression<String>? mode,
+    Expression<String>? freq,
     Expression<String>? rstSent,
     Expression<String>? rstRcvd,
-    Expression<String>? syncStatus,
-    Expression<String>? rawAdif,
     Expression<String>? name,
     Expression<String>? qth,
     Expression<String>? country,
@@ -1107,19 +1568,31 @@ class QsosCompanion extends UpdateCompanion<Qso> {
     Expression<String>? sig,
     Expression<String>? state,
     Expression<String>? cqz,
+    Expression<String>? contestId,
+    Expression<String>? stx,
+    Expression<String>? srx,
+    Expression<String>? stxString,
+    Expression<String>? srxString,
+    Expression<String>? stationCallsign,
+    Expression<String>? stationGridsquare,
+    Expression<String>? operator,
+    Expression<String>? userUuid,
+    Expression<String>? supabaseId,
+    Expression<String>? qrzLogId,
+    Expression<int>? syncVersion,
+    Expression<String>? syncStatus,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (qrzLogid != null) 'qrz_logid': qrzLogid,
       if (callsign != null) 'callsign': callsign,
       if (qsoDate != null) 'qso_date': qsoDate,
+      if (timeOn != null) 'time_on': timeOn,
       if (band != null) 'band': band,
-      if (freq != null) 'freq': freq,
       if (mode != null) 'mode': mode,
+      if (freq != null) 'freq': freq,
       if (rstSent != null) 'rst_sent': rstSent,
       if (rstRcvd != null) 'rst_rcvd': rstRcvd,
-      if (syncStatus != null) 'sync_status': syncStatus,
-      if (rawAdif != null) 'raw_adif': rawAdif,
       if (name != null) 'name': name,
       if (qth != null) 'qth': qth,
       if (country != null) 'country': country,
@@ -1134,21 +1607,33 @@ class QsosCompanion extends UpdateCompanion<Qso> {
       if (sig != null) 'sig': sig,
       if (state != null) 'state': state,
       if (cqz != null) 'cqz': cqz,
+      if (contestId != null) 'contest_id': contestId,
+      if (stx != null) 'stx': stx,
+      if (srx != null) 'srx': srx,
+      if (stxString != null) 'stx_string': stxString,
+      if (srxString != null) 'srx_string': srxString,
+      if (stationCallsign != null) 'station_callsign': stationCallsign,
+      if (stationGridsquare != null) 'station_gridsquare': stationGridsquare,
+      if (operator != null) 'operator': operator,
+      if (userUuid != null) 'user_uuid': userUuid,
+      if (supabaseId != null) 'supabase_id': supabaseId,
+      if (qrzLogId != null) 'qrz_log_id': qrzLogId,
+      if (syncVersion != null) 'sync_version': syncVersion,
+      if (syncStatus != null) 'sync_status': syncStatus,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
-  QsosCompanion copyWith({
-    Value<int>? id,
-    Value<String?>? qrzLogid,
+  LocalQsosCompanion copyWith({
+    Value<String>? id,
     Value<String>? callsign,
     Value<DateTime>? qsoDate,
+    Value<String>? timeOn,
     Value<String>? band,
-    Value<String?>? freq,
     Value<String>? mode,
+    Value<String?>? freq,
     Value<String?>? rstSent,
     Value<String?>? rstRcvd,
-    Value<String>? syncStatus,
-    Value<String?>? rawAdif,
     Value<String?>? name,
     Value<String?>? qth,
     Value<String?>? country,
@@ -1163,19 +1648,31 @@ class QsosCompanion extends UpdateCompanion<Qso> {
     Value<String?>? sig,
     Value<String?>? state,
     Value<String?>? cqz,
+    Value<String?>? contestId,
+    Value<String?>? stx,
+    Value<String?>? srx,
+    Value<String?>? stxString,
+    Value<String?>? srxString,
+    Value<String>? stationCallsign,
+    Value<String?>? stationGridsquare,
+    Value<String?>? operator,
+    Value<String>? userUuid,
+    Value<String>? supabaseId,
+    Value<String?>? qrzLogId,
+    Value<int>? syncVersion,
+    Value<String>? syncStatus,
+    Value<int>? rowid,
   }) {
-    return QsosCompanion(
+    return LocalQsosCompanion(
       id: id ?? this.id,
-      qrzLogid: qrzLogid ?? this.qrzLogid,
       callsign: callsign ?? this.callsign,
       qsoDate: qsoDate ?? this.qsoDate,
+      timeOn: timeOn ?? this.timeOn,
       band: band ?? this.band,
-      freq: freq ?? this.freq,
       mode: mode ?? this.mode,
+      freq: freq ?? this.freq,
       rstSent: rstSent ?? this.rstSent,
       rstRcvd: rstRcvd ?? this.rstRcvd,
-      syncStatus: syncStatus ?? this.syncStatus,
-      rawAdif: rawAdif ?? this.rawAdif,
       name: name ?? this.name,
       qth: qth ?? this.qth,
       country: country ?? this.country,
@@ -1190,6 +1687,20 @@ class QsosCompanion extends UpdateCompanion<Qso> {
       sig: sig ?? this.sig,
       state: state ?? this.state,
       cqz: cqz ?? this.cqz,
+      contestId: contestId ?? this.contestId,
+      stx: stx ?? this.stx,
+      srx: srx ?? this.srx,
+      stxString: stxString ?? this.stxString,
+      srxString: srxString ?? this.srxString,
+      stationCallsign: stationCallsign ?? this.stationCallsign,
+      stationGridsquare: stationGridsquare ?? this.stationGridsquare,
+      operator: operator ?? this.operator,
+      userUuid: userUuid ?? this.userUuid,
+      supabaseId: supabaseId ?? this.supabaseId,
+      qrzLogId: qrzLogId ?? this.qrzLogId,
+      syncVersion: syncVersion ?? this.syncVersion,
+      syncStatus: syncStatus ?? this.syncStatus,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -1197,10 +1708,7 @@ class QsosCompanion extends UpdateCompanion<Qso> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (qrzLogid.present) {
-      map['qrz_logid'] = Variable<String>(qrzLogid.value);
+      map['id'] = Variable<String>(id.value);
     }
     if (callsign.present) {
       map['callsign'] = Variable<String>(callsign.value);
@@ -1208,26 +1716,23 @@ class QsosCompanion extends UpdateCompanion<Qso> {
     if (qsoDate.present) {
       map['qso_date'] = Variable<DateTime>(qsoDate.value);
     }
+    if (timeOn.present) {
+      map['time_on'] = Variable<String>(timeOn.value);
+    }
     if (band.present) {
       map['band'] = Variable<String>(band.value);
     }
-    if (freq.present) {
-      map['freq'] = Variable<String>(freq.value);
-    }
     if (mode.present) {
       map['mode'] = Variable<String>(mode.value);
+    }
+    if (freq.present) {
+      map['freq'] = Variable<String>(freq.value);
     }
     if (rstSent.present) {
       map['rst_sent'] = Variable<String>(rstSent.value);
     }
     if (rstRcvd.present) {
       map['rst_rcvd'] = Variable<String>(rstRcvd.value);
-    }
-    if (syncStatus.present) {
-      map['sync_status'] = Variable<String>(syncStatus.value);
-    }
-    if (rawAdif.present) {
-      map['raw_adif'] = Variable<String>(rawAdif.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -1271,23 +1776,63 @@ class QsosCompanion extends UpdateCompanion<Qso> {
     if (cqz.present) {
       map['cqz'] = Variable<String>(cqz.value);
     }
+    if (contestId.present) {
+      map['contest_id'] = Variable<String>(contestId.value);
+    }
+    if (stx.present) {
+      map['stx'] = Variable<String>(stx.value);
+    }
+    if (srx.present) {
+      map['srx'] = Variable<String>(srx.value);
+    }
+    if (stxString.present) {
+      map['stx_string'] = Variable<String>(stxString.value);
+    }
+    if (srxString.present) {
+      map['srx_string'] = Variable<String>(srxString.value);
+    }
+    if (stationCallsign.present) {
+      map['station_callsign'] = Variable<String>(stationCallsign.value);
+    }
+    if (stationGridsquare.present) {
+      map['station_gridsquare'] = Variable<String>(stationGridsquare.value);
+    }
+    if (operator.present) {
+      map['operator'] = Variable<String>(operator.value);
+    }
+    if (userUuid.present) {
+      map['user_uuid'] = Variable<String>(userUuid.value);
+    }
+    if (supabaseId.present) {
+      map['supabase_id'] = Variable<String>(supabaseId.value);
+    }
+    if (qrzLogId.present) {
+      map['qrz_log_id'] = Variable<String>(qrzLogId.value);
+    }
+    if (syncVersion.present) {
+      map['sync_version'] = Variable<int>(syncVersion.value);
+    }
+    if (syncStatus.present) {
+      map['sync_status'] = Variable<String>(syncStatus.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('QsosCompanion(')
+    return (StringBuffer('LocalQsosCompanion(')
           ..write('id: $id, ')
-          ..write('qrzLogid: $qrzLogid, ')
           ..write('callsign: $callsign, ')
           ..write('qsoDate: $qsoDate, ')
+          ..write('timeOn: $timeOn, ')
           ..write('band: $band, ')
-          ..write('freq: $freq, ')
           ..write('mode: $mode, ')
+          ..write('freq: $freq, ')
           ..write('rstSent: $rstSent, ')
           ..write('rstRcvd: $rstRcvd, ')
-          ..write('syncStatus: $syncStatus, ')
-          ..write('rawAdif: $rawAdif, ')
           ..write('name: $name, ')
           ..write('qth: $qth, ')
           ..write('country: $country, ')
@@ -1301,7 +1846,21 @@ class QsosCompanion extends UpdateCompanion<Qso> {
           ..write('mySig: $mySig, ')
           ..write('sig: $sig, ')
           ..write('state: $state, ')
-          ..write('cqz: $cqz')
+          ..write('cqz: $cqz, ')
+          ..write('contestId: $contestId, ')
+          ..write('stx: $stx, ')
+          ..write('srx: $srx, ')
+          ..write('stxString: $stxString, ')
+          ..write('srxString: $srxString, ')
+          ..write('stationCallsign: $stationCallsign, ')
+          ..write('stationGridsquare: $stationGridsquare, ')
+          ..write('operator: $operator, ')
+          ..write('userUuid: $userUuid, ')
+          ..write('supabaseId: $supabaseId, ')
+          ..write('qrzLogId: $qrzLogId, ')
+          ..write('syncVersion: $syncVersion, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -1404,6 +1963,41 @@ class $AppSettingsTable extends AppSettings
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _stationGridsquareMeta = const VerificationMeta(
+    'stationGridsquare',
+  );
+  @override
+  late final GeneratedColumn<String> stationGridsquare =
+      GeneratedColumn<String>(
+        'station_gridsquare',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _userUuidMeta = const VerificationMeta(
+    'userUuid',
+  );
+  @override
+  late final GeneratedColumn<String> userUuid = GeneratedColumn<String>(
+    'user_uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastPushTimestampMeta = const VerificationMeta(
+    'lastPushTimestamp',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastPushTimestamp =
+      GeneratedColumn<DateTime>(
+        'last_push_timestamp',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1414,6 +2008,9 @@ class $AppSettingsTable extends AppSettings
     lastMode,
     lastStationCallsign,
     lastPower,
+    stationGridsquare,
+    userUuid,
+    lastPushTimestamp,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1484,6 +2081,32 @@ class $AppSettingsTable extends AppSettings
         lastPower.isAcceptableOrUnknown(data['last_power']!, _lastPowerMeta),
       );
     }
+    if (data.containsKey('station_gridsquare')) {
+      context.handle(
+        _stationGridsquareMeta,
+        stationGridsquare.isAcceptableOrUnknown(
+          data['station_gridsquare']!,
+          _stationGridsquareMeta,
+        ),
+      );
+    }
+    if (data.containsKey('user_uuid')) {
+      context.handle(
+        _userUuidMeta,
+        userUuid.isAcceptableOrUnknown(data['user_uuid']!, _userUuidMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userUuidMeta);
+    }
+    if (data.containsKey('last_push_timestamp')) {
+      context.handle(
+        _lastPushTimestampMeta,
+        lastPushTimestamp.isAcceptableOrUnknown(
+          data['last_push_timestamp']!,
+          _lastPushTimestampMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1525,6 +2148,18 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.string,
         data['${effectivePrefix}last_power'],
       ),
+      stationGridsquare: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}station_gridsquare'],
+      ),
+      userUuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_uuid'],
+      )!,
+      lastPushTimestamp: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_push_timestamp'],
+      ),
     );
   }
 
@@ -1543,6 +2178,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   final String? lastMode;
   final String? lastStationCallsign;
   final String? lastPower;
+  final String? stationGridsquare;
+  final String userUuid;
+  final DateTime? lastPushTimestamp;
   const AppSetting({
     required this.id,
     this.qrzUsername,
@@ -1552,6 +2190,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     this.lastMode,
     this.lastStationCallsign,
     this.lastPower,
+    this.stationGridsquare,
+    required this.userUuid,
+    this.lastPushTimestamp,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1577,6 +2218,13 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     }
     if (!nullToAbsent || lastPower != null) {
       map['last_power'] = Variable<String>(lastPower);
+    }
+    if (!nullToAbsent || stationGridsquare != null) {
+      map['station_gridsquare'] = Variable<String>(stationGridsquare);
+    }
+    map['user_uuid'] = Variable<String>(userUuid);
+    if (!nullToAbsent || lastPushTimestamp != null) {
+      map['last_push_timestamp'] = Variable<DateTime>(lastPushTimestamp);
     }
     return map;
   }
@@ -1605,6 +2253,13 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       lastPower: lastPower == null && nullToAbsent
           ? const Value.absent()
           : Value(lastPower),
+      stationGridsquare: stationGridsquare == null && nullToAbsent
+          ? const Value.absent()
+          : Value(stationGridsquare),
+      userUuid: Value(userUuid),
+      lastPushTimestamp: lastPushTimestamp == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastPushTimestamp),
     );
   }
 
@@ -1626,6 +2281,13 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
         json['lastStationCallsign'],
       ),
       lastPower: serializer.fromJson<String?>(json['lastPower']),
+      stationGridsquare: serializer.fromJson<String?>(
+        json['stationGridsquare'],
+      ),
+      userUuid: serializer.fromJson<String>(json['userUuid']),
+      lastPushTimestamp: serializer.fromJson<DateTime?>(
+        json['lastPushTimestamp'],
+      ),
     );
   }
   @override
@@ -1640,6 +2302,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       'lastMode': serializer.toJson<String?>(lastMode),
       'lastStationCallsign': serializer.toJson<String?>(lastStationCallsign),
       'lastPower': serializer.toJson<String?>(lastPower),
+      'stationGridsquare': serializer.toJson<String?>(stationGridsquare),
+      'userUuid': serializer.toJson<String>(userUuid),
+      'lastPushTimestamp': serializer.toJson<DateTime?>(lastPushTimestamp),
     };
   }
 
@@ -1652,6 +2317,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     Value<String?> lastMode = const Value.absent(),
     Value<String?> lastStationCallsign = const Value.absent(),
     Value<String?> lastPower = const Value.absent(),
+    Value<String?> stationGridsquare = const Value.absent(),
+    String? userUuid,
+    Value<DateTime?> lastPushTimestamp = const Value.absent(),
   }) => AppSetting(
     id: id ?? this.id,
     qrzUsername: qrzUsername.present ? qrzUsername.value : this.qrzUsername,
@@ -1667,6 +2335,13 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
         ? lastStationCallsign.value
         : this.lastStationCallsign,
     lastPower: lastPower.present ? lastPower.value : this.lastPower,
+    stationGridsquare: stationGridsquare.present
+        ? stationGridsquare.value
+        : this.stationGridsquare,
+    userUuid: userUuid ?? this.userUuid,
+    lastPushTimestamp: lastPushTimestamp.present
+        ? lastPushTimestamp.value
+        : this.lastPushTimestamp,
   );
   AppSetting copyWithCompanion(AppSettingsCompanion data) {
     return AppSetting(
@@ -1686,6 +2361,13 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ? data.lastStationCallsign.value
           : this.lastStationCallsign,
       lastPower: data.lastPower.present ? data.lastPower.value : this.lastPower,
+      stationGridsquare: data.stationGridsquare.present
+          ? data.stationGridsquare.value
+          : this.stationGridsquare,
+      userUuid: data.userUuid.present ? data.userUuid.value : this.userUuid,
+      lastPushTimestamp: data.lastPushTimestamp.present
+          ? data.lastPushTimestamp.value
+          : this.lastPushTimestamp,
     );
   }
 
@@ -1699,7 +2381,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('lastBand: $lastBand, ')
           ..write('lastMode: $lastMode, ')
           ..write('lastStationCallsign: $lastStationCallsign, ')
-          ..write('lastPower: $lastPower')
+          ..write('lastPower: $lastPower, ')
+          ..write('stationGridsquare: $stationGridsquare, ')
+          ..write('userUuid: $userUuid, ')
+          ..write('lastPushTimestamp: $lastPushTimestamp')
           ..write(')'))
         .toString();
   }
@@ -1714,6 +2399,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     lastMode,
     lastStationCallsign,
     lastPower,
+    stationGridsquare,
+    userUuid,
+    lastPushTimestamp,
   );
   @override
   bool operator ==(Object other) =>
@@ -1726,7 +2414,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.lastBand == this.lastBand &&
           other.lastMode == this.lastMode &&
           other.lastStationCallsign == this.lastStationCallsign &&
-          other.lastPower == this.lastPower);
+          other.lastPower == this.lastPower &&
+          other.stationGridsquare == this.stationGridsquare &&
+          other.userUuid == this.userUuid &&
+          other.lastPushTimestamp == this.lastPushTimestamp);
 }
 
 class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
@@ -1738,6 +2429,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<String?> lastMode;
   final Value<String?> lastStationCallsign;
   final Value<String?> lastPower;
+  final Value<String?> stationGridsquare;
+  final Value<String> userUuid;
+  final Value<DateTime?> lastPushTimestamp;
   const AppSettingsCompanion({
     this.id = const Value.absent(),
     this.qrzUsername = const Value.absent(),
@@ -1747,6 +2441,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.lastMode = const Value.absent(),
     this.lastStationCallsign = const Value.absent(),
     this.lastPower = const Value.absent(),
+    this.stationGridsquare = const Value.absent(),
+    this.userUuid = const Value.absent(),
+    this.lastPushTimestamp = const Value.absent(),
   });
   AppSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -1757,7 +2454,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.lastMode = const Value.absent(),
     this.lastStationCallsign = const Value.absent(),
     this.lastPower = const Value.absent(),
-  });
+    this.stationGridsquare = const Value.absent(),
+    required String userUuid,
+    this.lastPushTimestamp = const Value.absent(),
+  }) : userUuid = Value(userUuid);
   static Insertable<AppSetting> custom({
     Expression<int>? id,
     Expression<String>? qrzUsername,
@@ -1767,6 +2467,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<String>? lastMode,
     Expression<String>? lastStationCallsign,
     Expression<String>? lastPower,
+    Expression<String>? stationGridsquare,
+    Expression<String>? userUuid,
+    Expression<DateTime>? lastPushTimestamp,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1778,6 +2481,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       if (lastStationCallsign != null)
         'last_station_callsign': lastStationCallsign,
       if (lastPower != null) 'last_power': lastPower,
+      if (stationGridsquare != null) 'station_gridsquare': stationGridsquare,
+      if (userUuid != null) 'user_uuid': userUuid,
+      if (lastPushTimestamp != null) 'last_push_timestamp': lastPushTimestamp,
     });
   }
 
@@ -1790,6 +2496,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<String?>? lastMode,
     Value<String?>? lastStationCallsign,
     Value<String?>? lastPower,
+    Value<String?>? stationGridsquare,
+    Value<String>? userUuid,
+    Value<DateTime?>? lastPushTimestamp,
   }) {
     return AppSettingsCompanion(
       id: id ?? this.id,
@@ -1800,6 +2509,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       lastMode: lastMode ?? this.lastMode,
       lastStationCallsign: lastStationCallsign ?? this.lastStationCallsign,
       lastPower: lastPower ?? this.lastPower,
+      stationGridsquare: stationGridsquare ?? this.stationGridsquare,
+      userUuid: userUuid ?? this.userUuid,
+      lastPushTimestamp: lastPushTimestamp ?? this.lastPushTimestamp,
     );
   }
 
@@ -1832,6 +2544,15 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     if (lastPower.present) {
       map['last_power'] = Variable<String>(lastPower.value);
     }
+    if (stationGridsquare.present) {
+      map['station_gridsquare'] = Variable<String>(stationGridsquare.value);
+    }
+    if (userUuid.present) {
+      map['user_uuid'] = Variable<String>(userUuid.value);
+    }
+    if (lastPushTimestamp.present) {
+      map['last_push_timestamp'] = Variable<DateTime>(lastPushTimestamp.value);
+    }
     return map;
   }
 
@@ -1845,7 +2566,222 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('lastBand: $lastBand, ')
           ..write('lastMode: $lastMode, ')
           ..write('lastStationCallsign: $lastStationCallsign, ')
-          ..write('lastPower: $lastPower')
+          ..write('lastPower: $lastPower, ')
+          ..write('stationGridsquare: $stationGridsquare, ')
+          ..write('userUuid: $userUuid, ')
+          ..write('lastPushTimestamp: $lastPushTimestamp')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SyncMetaTable extends SyncMeta
+    with TableInfo<$SyncMetaTable, SyncMetaData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SyncMetaTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _keyMeta = const VerificationMeta('key');
+  @override
+  late final GeneratedColumn<String> key = GeneratedColumn<String>(
+    'key',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 50,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [key, value];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_meta';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SyncMetaData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('key')) {
+      context.handle(
+        _keyMeta,
+        key.isAcceptableOrUnknown(data['key']!, _keyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_keyMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => const {};
+  @override
+  SyncMetaData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SyncMetaData(
+      key: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}key'],
+      )!,
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}value'],
+      )!,
+    );
+  }
+
+  @override
+  $SyncMetaTable createAlias(String alias) {
+    return $SyncMetaTable(attachedDatabase, alias);
+  }
+}
+
+class SyncMetaData extends DataClass implements Insertable<SyncMetaData> {
+  final String key;
+  final String value;
+  const SyncMetaData({required this.key, required this.value});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['key'] = Variable<String>(key);
+    map['value'] = Variable<String>(value);
+    return map;
+  }
+
+  SyncMetaCompanion toCompanion(bool nullToAbsent) {
+    return SyncMetaCompanion(key: Value(key), value: Value(value));
+  }
+
+  factory SyncMetaData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SyncMetaData(
+      key: serializer.fromJson<String>(json['key']),
+      value: serializer.fromJson<String>(json['value']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'key': serializer.toJson<String>(key),
+      'value': serializer.toJson<String>(value),
+    };
+  }
+
+  SyncMetaData copyWith({String? key, String? value}) =>
+      SyncMetaData(key: key ?? this.key, value: value ?? this.value);
+  SyncMetaData copyWithCompanion(SyncMetaCompanion data) {
+    return SyncMetaData(
+      key: data.key.present ? data.key.value : this.key,
+      value: data.value.present ? data.value.value : this.value,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncMetaData(')
+          ..write('key: $key, ')
+          ..write('value: $value')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(key, value);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SyncMetaData &&
+          other.key == this.key &&
+          other.value == this.value);
+}
+
+class SyncMetaCompanion extends UpdateCompanion<SyncMetaData> {
+  final Value<String> key;
+  final Value<String> value;
+  final Value<int> rowid;
+  const SyncMetaCompanion({
+    this.key = const Value.absent(),
+    this.value = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SyncMetaCompanion.insert({
+    required String key,
+    required String value,
+    this.rowid = const Value.absent(),
+  }) : key = Value(key),
+       value = Value(value);
+  static Insertable<SyncMetaData> custom({
+    Expression<String>? key,
+    Expression<String>? value,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (key != null) 'key': key,
+      if (value != null) 'value': value,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SyncMetaCompanion copyWith({
+    Value<String>? key,
+    Value<String>? value,
+    Value<int>? rowid,
+  }) {
+    return SyncMetaCompanion(
+      key: key ?? this.key,
+      value: value ?? this.value,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (key.present) {
+      map['key'] = Variable<String>(key.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncMetaCompanion(')
+          ..write('key: $key, ')
+          ..write('value: $value, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -2204,33 +3140,33 @@ class SyncLogsCompanion extends UpdateCompanion<SyncLog> {
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
-  late final $QsosTable qsos = $QsosTable(this);
+  late final $LocalQsosTable localQsos = $LocalQsosTable(this);
   late final $AppSettingsTable appSettings = $AppSettingsTable(this);
+  late final $SyncMetaTable syncMeta = $SyncMetaTable(this);
   late final $SyncLogsTable syncLogs = $SyncLogsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
-    qsos,
+    localQsos,
     appSettings,
+    syncMeta,
     syncLogs,
   ];
 }
 
-typedef $$QsosTableCreateCompanionBuilder =
-    QsosCompanion Function({
-      Value<int> id,
-      Value<String?> qrzLogid,
+typedef $$LocalQsosTableCreateCompanionBuilder =
+    LocalQsosCompanion Function({
+      required String id,
       required String callsign,
       required DateTime qsoDate,
+      required String timeOn,
       required String band,
-      Value<String?> freq,
       required String mode,
+      Value<String?> freq,
       Value<String?> rstSent,
       Value<String?> rstRcvd,
-      Value<String> syncStatus,
-      Value<String?> rawAdif,
       Value<String?> name,
       Value<String?> qth,
       Value<String?> country,
@@ -2245,20 +3181,32 @@ typedef $$QsosTableCreateCompanionBuilder =
       Value<String?> sig,
       Value<String?> state,
       Value<String?> cqz,
+      Value<String?> contestId,
+      Value<String?> stx,
+      Value<String?> srx,
+      Value<String?> stxString,
+      Value<String?> srxString,
+      required String stationCallsign,
+      Value<String?> stationGridsquare,
+      Value<String?> operator,
+      required String userUuid,
+      required String supabaseId,
+      Value<String?> qrzLogId,
+      required int syncVersion,
+      required String syncStatus,
+      Value<int> rowid,
     });
-typedef $$QsosTableUpdateCompanionBuilder =
-    QsosCompanion Function({
-      Value<int> id,
-      Value<String?> qrzLogid,
+typedef $$LocalQsosTableUpdateCompanionBuilder =
+    LocalQsosCompanion Function({
+      Value<String> id,
       Value<String> callsign,
       Value<DateTime> qsoDate,
+      Value<String> timeOn,
       Value<String> band,
-      Value<String?> freq,
       Value<String> mode,
+      Value<String?> freq,
       Value<String?> rstSent,
       Value<String?> rstRcvd,
-      Value<String> syncStatus,
-      Value<String?> rawAdif,
       Value<String?> name,
       Value<String?> qth,
       Value<String?> country,
@@ -2273,23 +3221,33 @@ typedef $$QsosTableUpdateCompanionBuilder =
       Value<String?> sig,
       Value<String?> state,
       Value<String?> cqz,
+      Value<String?> contestId,
+      Value<String?> stx,
+      Value<String?> srx,
+      Value<String?> stxString,
+      Value<String?> srxString,
+      Value<String> stationCallsign,
+      Value<String?> stationGridsquare,
+      Value<String?> operator,
+      Value<String> userUuid,
+      Value<String> supabaseId,
+      Value<String?> qrzLogId,
+      Value<int> syncVersion,
+      Value<String> syncStatus,
+      Value<int> rowid,
     });
 
-class $$QsosTableFilterComposer extends Composer<_$AppDatabase, $QsosTable> {
-  $$QsosTableFilterComposer({
+class $$LocalQsosTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalQsosTable> {
+  $$LocalQsosTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<int> get id => $composableBuilder(
+  ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get qrzLogid => $composableBuilder(
-    column: $table.qrzLogid,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2303,18 +3261,23 @@ class $$QsosTableFilterComposer extends Composer<_$AppDatabase, $QsosTable> {
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get timeOn => $composableBuilder(
+    column: $table.timeOn,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get band => $composableBuilder(
     column: $table.band,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get freq => $composableBuilder(
-    column: $table.freq,
+  ColumnFilters<String> get mode => $composableBuilder(
+    column: $table.mode,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get mode => $composableBuilder(
-    column: $table.mode,
+  ColumnFilters<String> get freq => $composableBuilder(
+    column: $table.freq,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2325,16 +3288,6 @@ class $$QsosTableFilterComposer extends Composer<_$AppDatabase, $QsosTable> {
 
   ColumnFilters<String> get rstRcvd => $composableBuilder(
     column: $table.rstRcvd,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get rawAdif => $composableBuilder(
-    column: $table.rawAdif,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2407,23 +3360,84 @@ class $$QsosTableFilterComposer extends Composer<_$AppDatabase, $QsosTable> {
     column: $table.cqz,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<String> get contestId => $composableBuilder(
+    column: $table.contestId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get stx => $composableBuilder(
+    column: $table.stx,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get srx => $composableBuilder(
+    column: $table.srx,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get stxString => $composableBuilder(
+    column: $table.stxString,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get srxString => $composableBuilder(
+    column: $table.srxString,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get stationCallsign => $composableBuilder(
+    column: $table.stationCallsign,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get stationGridsquare => $composableBuilder(
+    column: $table.stationGridsquare,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get operator => $composableBuilder(
+    column: $table.operator,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userUuid => $composableBuilder(
+    column: $table.userUuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get supabaseId => $composableBuilder(
+    column: $table.supabaseId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get qrzLogId => $composableBuilder(
+    column: $table.qrzLogId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get syncVersion => $composableBuilder(
+    column: $table.syncVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
-class $$QsosTableOrderingComposer extends Composer<_$AppDatabase, $QsosTable> {
-  $$QsosTableOrderingComposer({
+class $$LocalQsosTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalQsosTable> {
+  $$LocalQsosTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<int> get id => $composableBuilder(
+  ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get qrzLogid => $composableBuilder(
-    column: $table.qrzLogid,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -2437,18 +3451,23 @@ class $$QsosTableOrderingComposer extends Composer<_$AppDatabase, $QsosTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get timeOn => $composableBuilder(
+    column: $table.timeOn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get band => $composableBuilder(
     column: $table.band,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get freq => $composableBuilder(
-    column: $table.freq,
+  ColumnOrderings<String> get mode => $composableBuilder(
+    column: $table.mode,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get mode => $composableBuilder(
-    column: $table.mode,
+  ColumnOrderings<String> get freq => $composableBuilder(
+    column: $table.freq,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -2459,16 +3478,6 @@ class $$QsosTableOrderingComposer extends Composer<_$AppDatabase, $QsosTable> {
 
   ColumnOrderings<String> get rstRcvd => $composableBuilder(
     column: $table.rstRcvd,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get rawAdif => $composableBuilder(
-    column: $table.rawAdif,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -2541,22 +3550,84 @@ class $$QsosTableOrderingComposer extends Composer<_$AppDatabase, $QsosTable> {
     column: $table.cqz,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get contestId => $composableBuilder(
+    column: $table.contestId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get stx => $composableBuilder(
+    column: $table.stx,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get srx => $composableBuilder(
+    column: $table.srx,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get stxString => $composableBuilder(
+    column: $table.stxString,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get srxString => $composableBuilder(
+    column: $table.srxString,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get stationCallsign => $composableBuilder(
+    column: $table.stationCallsign,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get stationGridsquare => $composableBuilder(
+    column: $table.stationGridsquare,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get operator => $composableBuilder(
+    column: $table.operator,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userUuid => $composableBuilder(
+    column: $table.userUuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get supabaseId => $composableBuilder(
+    column: $table.supabaseId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get qrzLogId => $composableBuilder(
+    column: $table.qrzLogId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get syncVersion => $composableBuilder(
+    column: $table.syncVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
-class $$QsosTableAnnotationComposer
-    extends Composer<_$AppDatabase, $QsosTable> {
-  $$QsosTableAnnotationComposer({
+class $$LocalQsosTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalQsosTable> {
+  $$LocalQsosTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<int> get id =>
+  GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get qrzLogid =>
-      $composableBuilder(column: $table.qrzLogid, builder: (column) => column);
 
   GeneratedColumn<String> get callsign =>
       $composableBuilder(column: $table.callsign, builder: (column) => column);
@@ -2564,28 +3635,23 @@ class $$QsosTableAnnotationComposer
   GeneratedColumn<DateTime> get qsoDate =>
       $composableBuilder(column: $table.qsoDate, builder: (column) => column);
 
+  GeneratedColumn<String> get timeOn =>
+      $composableBuilder(column: $table.timeOn, builder: (column) => column);
+
   GeneratedColumn<String> get band =>
       $composableBuilder(column: $table.band, builder: (column) => column);
 
-  GeneratedColumn<String> get freq =>
-      $composableBuilder(column: $table.freq, builder: (column) => column);
-
   GeneratedColumn<String> get mode =>
       $composableBuilder(column: $table.mode, builder: (column) => column);
+
+  GeneratedColumn<String> get freq =>
+      $composableBuilder(column: $table.freq, builder: (column) => column);
 
   GeneratedColumn<String> get rstSent =>
       $composableBuilder(column: $table.rstSent, builder: (column) => column);
 
   GeneratedColumn<String> get rstRcvd =>
       $composableBuilder(column: $table.rstRcvd, builder: (column) => column);
-
-  GeneratedColumn<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get rawAdif =>
-      $composableBuilder(column: $table.rawAdif, builder: (column) => column);
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
@@ -2630,47 +3696,94 @@ class $$QsosTableAnnotationComposer
 
   GeneratedColumn<String> get cqz =>
       $composableBuilder(column: $table.cqz, builder: (column) => column);
+
+  GeneratedColumn<String> get contestId =>
+      $composableBuilder(column: $table.contestId, builder: (column) => column);
+
+  GeneratedColumn<String> get stx =>
+      $composableBuilder(column: $table.stx, builder: (column) => column);
+
+  GeneratedColumn<String> get srx =>
+      $composableBuilder(column: $table.srx, builder: (column) => column);
+
+  GeneratedColumn<String> get stxString =>
+      $composableBuilder(column: $table.stxString, builder: (column) => column);
+
+  GeneratedColumn<String> get srxString =>
+      $composableBuilder(column: $table.srxString, builder: (column) => column);
+
+  GeneratedColumn<String> get stationCallsign => $composableBuilder(
+    column: $table.stationCallsign,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get stationGridsquare => $composableBuilder(
+    column: $table.stationGridsquare,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get operator =>
+      $composableBuilder(column: $table.operator, builder: (column) => column);
+
+  GeneratedColumn<String> get userUuid =>
+      $composableBuilder(column: $table.userUuid, builder: (column) => column);
+
+  GeneratedColumn<String> get supabaseId => $composableBuilder(
+    column: $table.supabaseId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get qrzLogId =>
+      $composableBuilder(column: $table.qrzLogId, builder: (column) => column);
+
+  GeneratedColumn<int> get syncVersion => $composableBuilder(
+    column: $table.syncVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
 }
 
-class $$QsosTableTableManager
+class $$LocalQsosTableTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          $QsosTable,
-          Qso,
-          $$QsosTableFilterComposer,
-          $$QsosTableOrderingComposer,
-          $$QsosTableAnnotationComposer,
-          $$QsosTableCreateCompanionBuilder,
-          $$QsosTableUpdateCompanionBuilder,
-          (Qso, BaseReferences<_$AppDatabase, $QsosTable, Qso>),
-          Qso,
+          $LocalQsosTable,
+          LocalQso,
+          $$LocalQsosTableFilterComposer,
+          $$LocalQsosTableOrderingComposer,
+          $$LocalQsosTableAnnotationComposer,
+          $$LocalQsosTableCreateCompanionBuilder,
+          $$LocalQsosTableUpdateCompanionBuilder,
+          (LocalQso, BaseReferences<_$AppDatabase, $LocalQsosTable, LocalQso>),
+          LocalQso,
           PrefetchHooks Function()
         > {
-  $$QsosTableTableManager(_$AppDatabase db, $QsosTable table)
+  $$LocalQsosTableTableManager(_$AppDatabase db, $LocalQsosTable table)
     : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$QsosTableFilterComposer($db: db, $table: table),
+              $$LocalQsosTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$QsosTableOrderingComposer($db: db, $table: table),
+              $$LocalQsosTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$QsosTableAnnotationComposer($db: db, $table: table),
+              $$LocalQsosTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<int> id = const Value.absent(),
-                Value<String?> qrzLogid = const Value.absent(),
+                Value<String> id = const Value.absent(),
                 Value<String> callsign = const Value.absent(),
                 Value<DateTime> qsoDate = const Value.absent(),
+                Value<String> timeOn = const Value.absent(),
                 Value<String> band = const Value.absent(),
-                Value<String?> freq = const Value.absent(),
                 Value<String> mode = const Value.absent(),
+                Value<String?> freq = const Value.absent(),
                 Value<String?> rstSent = const Value.absent(),
                 Value<String?> rstRcvd = const Value.absent(),
-                Value<String> syncStatus = const Value.absent(),
-                Value<String?> rawAdif = const Value.absent(),
                 Value<String?> name = const Value.absent(),
                 Value<String?> qth = const Value.absent(),
                 Value<String?> country = const Value.absent(),
@@ -2685,18 +3798,30 @@ class $$QsosTableTableManager
                 Value<String?> sig = const Value.absent(),
                 Value<String?> state = const Value.absent(),
                 Value<String?> cqz = const Value.absent(),
-              }) => QsosCompanion(
+                Value<String?> contestId = const Value.absent(),
+                Value<String?> stx = const Value.absent(),
+                Value<String?> srx = const Value.absent(),
+                Value<String?> stxString = const Value.absent(),
+                Value<String?> srxString = const Value.absent(),
+                Value<String> stationCallsign = const Value.absent(),
+                Value<String?> stationGridsquare = const Value.absent(),
+                Value<String?> operator = const Value.absent(),
+                Value<String> userUuid = const Value.absent(),
+                Value<String> supabaseId = const Value.absent(),
+                Value<String?> qrzLogId = const Value.absent(),
+                Value<int> syncVersion = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalQsosCompanion(
                 id: id,
-                qrzLogid: qrzLogid,
                 callsign: callsign,
                 qsoDate: qsoDate,
+                timeOn: timeOn,
                 band: band,
-                freq: freq,
                 mode: mode,
+                freq: freq,
                 rstSent: rstSent,
                 rstRcvd: rstRcvd,
-                syncStatus: syncStatus,
-                rawAdif: rawAdif,
                 name: name,
                 qth: qth,
                 country: country,
@@ -2711,20 +3836,32 @@ class $$QsosTableTableManager
                 sig: sig,
                 state: state,
                 cqz: cqz,
+                contestId: contestId,
+                stx: stx,
+                srx: srx,
+                stxString: stxString,
+                srxString: srxString,
+                stationCallsign: stationCallsign,
+                stationGridsquare: stationGridsquare,
+                operator: operator,
+                userUuid: userUuid,
+                supabaseId: supabaseId,
+                qrzLogId: qrzLogId,
+                syncVersion: syncVersion,
+                syncStatus: syncStatus,
+                rowid: rowid,
               ),
           createCompanionCallback:
               ({
-                Value<int> id = const Value.absent(),
-                Value<String?> qrzLogid = const Value.absent(),
+                required String id,
                 required String callsign,
                 required DateTime qsoDate,
+                required String timeOn,
                 required String band,
-                Value<String?> freq = const Value.absent(),
                 required String mode,
+                Value<String?> freq = const Value.absent(),
                 Value<String?> rstSent = const Value.absent(),
                 Value<String?> rstRcvd = const Value.absent(),
-                Value<String> syncStatus = const Value.absent(),
-                Value<String?> rawAdif = const Value.absent(),
                 Value<String?> name = const Value.absent(),
                 Value<String?> qth = const Value.absent(),
                 Value<String?> country = const Value.absent(),
@@ -2739,18 +3876,30 @@ class $$QsosTableTableManager
                 Value<String?> sig = const Value.absent(),
                 Value<String?> state = const Value.absent(),
                 Value<String?> cqz = const Value.absent(),
-              }) => QsosCompanion.insert(
+                Value<String?> contestId = const Value.absent(),
+                Value<String?> stx = const Value.absent(),
+                Value<String?> srx = const Value.absent(),
+                Value<String?> stxString = const Value.absent(),
+                Value<String?> srxString = const Value.absent(),
+                required String stationCallsign,
+                Value<String?> stationGridsquare = const Value.absent(),
+                Value<String?> operator = const Value.absent(),
+                required String userUuid,
+                required String supabaseId,
+                Value<String?> qrzLogId = const Value.absent(),
+                required int syncVersion,
+                required String syncStatus,
+                Value<int> rowid = const Value.absent(),
+              }) => LocalQsosCompanion.insert(
                 id: id,
-                qrzLogid: qrzLogid,
                 callsign: callsign,
                 qsoDate: qsoDate,
+                timeOn: timeOn,
                 band: band,
-                freq: freq,
                 mode: mode,
+                freq: freq,
                 rstSent: rstSent,
                 rstRcvd: rstRcvd,
-                syncStatus: syncStatus,
-                rawAdif: rawAdif,
                 name: name,
                 qth: qth,
                 country: country,
@@ -2765,6 +3914,20 @@ class $$QsosTableTableManager
                 sig: sig,
                 state: state,
                 cqz: cqz,
+                contestId: contestId,
+                stx: stx,
+                srx: srx,
+                stxString: stxString,
+                srxString: srxString,
+                stationCallsign: stationCallsign,
+                stationGridsquare: stationGridsquare,
+                operator: operator,
+                userUuid: userUuid,
+                supabaseId: supabaseId,
+                qrzLogId: qrzLogId,
+                syncVersion: syncVersion,
+                syncStatus: syncStatus,
+                rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -2774,18 +3937,18 @@ class $$QsosTableTableManager
       );
 }
 
-typedef $$QsosTableProcessedTableManager =
+typedef $$LocalQsosTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      $QsosTable,
-      Qso,
-      $$QsosTableFilterComposer,
-      $$QsosTableOrderingComposer,
-      $$QsosTableAnnotationComposer,
-      $$QsosTableCreateCompanionBuilder,
-      $$QsosTableUpdateCompanionBuilder,
-      (Qso, BaseReferences<_$AppDatabase, $QsosTable, Qso>),
-      Qso,
+      $LocalQsosTable,
+      LocalQso,
+      $$LocalQsosTableFilterComposer,
+      $$LocalQsosTableOrderingComposer,
+      $$LocalQsosTableAnnotationComposer,
+      $$LocalQsosTableCreateCompanionBuilder,
+      $$LocalQsosTableUpdateCompanionBuilder,
+      (LocalQso, BaseReferences<_$AppDatabase, $LocalQsosTable, LocalQso>),
+      LocalQso,
       PrefetchHooks Function()
     >;
 typedef $$AppSettingsTableCreateCompanionBuilder =
@@ -2798,6 +3961,9 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<String?> lastMode,
       Value<String?> lastStationCallsign,
       Value<String?> lastPower,
+      Value<String?> stationGridsquare,
+      required String userUuid,
+      Value<DateTime?> lastPushTimestamp,
     });
 typedef $$AppSettingsTableUpdateCompanionBuilder =
     AppSettingsCompanion Function({
@@ -2809,6 +3975,9 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<String?> lastMode,
       Value<String?> lastStationCallsign,
       Value<String?> lastPower,
+      Value<String?> stationGridsquare,
+      Value<String> userUuid,
+      Value<DateTime?> lastPushTimestamp,
     });
 
 class $$AppSettingsTableFilterComposer
@@ -2857,6 +4026,21 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<String> get lastPower => $composableBuilder(
     column: $table.lastPower,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get stationGridsquare => $composableBuilder(
+    column: $table.stationGridsquare,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userUuid => $composableBuilder(
+    column: $table.userUuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastPushTimestamp => $composableBuilder(
+    column: $table.lastPushTimestamp,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2909,6 +4093,21 @@ class $$AppSettingsTableOrderingComposer
     column: $table.lastPower,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get stationGridsquare => $composableBuilder(
+    column: $table.stationGridsquare,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userUuid => $composableBuilder(
+    column: $table.userUuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastPushTimestamp => $composableBuilder(
+    column: $table.lastPushTimestamp,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableAnnotationComposer
@@ -2951,6 +4150,19 @@ class $$AppSettingsTableAnnotationComposer
 
   GeneratedColumn<String> get lastPower =>
       $composableBuilder(column: $table.lastPower, builder: (column) => column);
+
+  GeneratedColumn<String> get stationGridsquare => $composableBuilder(
+    column: $table.stationGridsquare,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get userUuid =>
+      $composableBuilder(column: $table.userUuid, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastPushTimestamp => $composableBuilder(
+    column: $table.lastPushTimestamp,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableManager
@@ -2992,6 +4204,9 @@ class $$AppSettingsTableTableManager
                 Value<String?> lastMode = const Value.absent(),
                 Value<String?> lastStationCallsign = const Value.absent(),
                 Value<String?> lastPower = const Value.absent(),
+                Value<String?> stationGridsquare = const Value.absent(),
+                Value<String> userUuid = const Value.absent(),
+                Value<DateTime?> lastPushTimestamp = const Value.absent(),
               }) => AppSettingsCompanion(
                 id: id,
                 qrzUsername: qrzUsername,
@@ -3001,6 +4216,9 @@ class $$AppSettingsTableTableManager
                 lastMode: lastMode,
                 lastStationCallsign: lastStationCallsign,
                 lastPower: lastPower,
+                stationGridsquare: stationGridsquare,
+                userUuid: userUuid,
+                lastPushTimestamp: lastPushTimestamp,
               ),
           createCompanionCallback:
               ({
@@ -3012,6 +4230,9 @@ class $$AppSettingsTableTableManager
                 Value<String?> lastMode = const Value.absent(),
                 Value<String?> lastStationCallsign = const Value.absent(),
                 Value<String?> lastPower = const Value.absent(),
+                Value<String?> stationGridsquare = const Value.absent(),
+                required String userUuid,
+                Value<DateTime?> lastPushTimestamp = const Value.absent(),
               }) => AppSettingsCompanion.insert(
                 id: id,
                 qrzUsername: qrzUsername,
@@ -3021,6 +4242,9 @@ class $$AppSettingsTableTableManager
                 lastMode: lastMode,
                 lastStationCallsign: lastStationCallsign,
                 lastPower: lastPower,
+                stationGridsquare: stationGridsquare,
+                userUuid: userUuid,
+                lastPushTimestamp: lastPushTimestamp,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -3045,6 +4269,145 @@ typedef $$AppSettingsTableProcessedTableManager =
         BaseReferences<_$AppDatabase, $AppSettingsTable, AppSetting>,
       ),
       AppSetting,
+      PrefetchHooks Function()
+    >;
+typedef $$SyncMetaTableCreateCompanionBuilder =
+    SyncMetaCompanion Function({
+      required String key,
+      required String value,
+      Value<int> rowid,
+    });
+typedef $$SyncMetaTableUpdateCompanionBuilder =
+    SyncMetaCompanion Function({
+      Value<String> key,
+      Value<String> value,
+      Value<int> rowid,
+    });
+
+class $$SyncMetaTableFilterComposer
+    extends Composer<_$AppDatabase, $SyncMetaTable> {
+  $$SyncMetaTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SyncMetaTableOrderingComposer
+    extends Composer<_$AppDatabase, $SyncMetaTable> {
+  $$SyncMetaTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SyncMetaTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SyncMetaTable> {
+  $$SyncMetaTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get key =>
+      $composableBuilder(column: $table.key, builder: (column) => column);
+
+  GeneratedColumn<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+}
+
+class $$SyncMetaTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SyncMetaTable,
+          SyncMetaData,
+          $$SyncMetaTableFilterComposer,
+          $$SyncMetaTableOrderingComposer,
+          $$SyncMetaTableAnnotationComposer,
+          $$SyncMetaTableCreateCompanionBuilder,
+          $$SyncMetaTableUpdateCompanionBuilder,
+          (
+            SyncMetaData,
+            BaseReferences<_$AppDatabase, $SyncMetaTable, SyncMetaData>,
+          ),
+          SyncMetaData,
+          PrefetchHooks Function()
+        > {
+  $$SyncMetaTableTableManager(_$AppDatabase db, $SyncMetaTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SyncMetaTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SyncMetaTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SyncMetaTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> key = const Value.absent(),
+                Value<String> value = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SyncMetaCompanion(key: key, value: value, rowid: rowid),
+          createCompanionCallback:
+              ({
+                required String key,
+                required String value,
+                Value<int> rowid = const Value.absent(),
+              }) => SyncMetaCompanion.insert(
+                key: key,
+                value: value,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SyncMetaTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SyncMetaTable,
+      SyncMetaData,
+      $$SyncMetaTableFilterComposer,
+      $$SyncMetaTableOrderingComposer,
+      $$SyncMetaTableAnnotationComposer,
+      $$SyncMetaTableCreateCompanionBuilder,
+      $$SyncMetaTableUpdateCompanionBuilder,
+      (
+        SyncMetaData,
+        BaseReferences<_$AppDatabase, $SyncMetaTable, SyncMetaData>,
+      ),
+      SyncMetaData,
       PrefetchHooks Function()
     >;
 typedef $$SyncLogsTableCreateCompanionBuilder =
@@ -3239,9 +4602,12 @@ typedef $$SyncLogsTableProcessedTableManager =
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
-  $$QsosTableTableManager get qsos => $$QsosTableTableManager(_db, _db.qsos);
+  $$LocalQsosTableTableManager get localQsos =>
+      $$LocalQsosTableTableManager(_db, _db.localQsos);
   $$AppSettingsTableTableManager get appSettings =>
       $$AppSettingsTableTableManager(_db, _db.appSettings);
+  $$SyncMetaTableTableManager get syncMeta =>
+      $$SyncMetaTableTableManager(_db, _db.syncMeta);
   $$SyncLogsTableTableManager get syncLogs =>
       $$SyncLogsTableTableManager(_db, _db.syncLogs);
 }

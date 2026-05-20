@@ -1,0 +1,120 @@
+-- Migration from HorizonQRZ (v4) to Log Summit (v9)
+-- Run this on your self-hosted Supabase at 178.104.250.70
+
+-- Drop existing log_summit schema if exists
+DROP SCHEMA IF EXISTS log_summit CASCADE;
+
+-- Create new log_summit schema
+CREATE SCHEMA IF NOT EXISTS log_summit;
+
+-- Profiles table (links Supabase Auth user to station info)
+CREATE TABLE IF NOT EXISTS log_summit.profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  callsign TEXT NOT NULL UNIQUE,
+  station_gridsquare TEXT,
+  default_band TEXT DEFAULT '20m',
+  default_mode TEXT DEFAULT 'SSB',
+  default_power TEXT DEFAULT '100',
+  operator_name TEXT,
+  cq_zone INT,
+  itu_zone INT,
+  state TEXT,
+  country TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- QSOs table (the source of truth)
+CREATE TABLE IF NOT EXISTS log_summit.qsos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  callsign TEXT NOT NULL,
+  qso_date DATE NOT NULL,
+  time_on TIME NOT NULL,
+  band TEXT NOT NULL,
+  mode TEXT NOT NULL,
+  freq TEXT,
+  rst_sent TEXT,
+  rst_rcvd TEXT,
+  name TEXT,
+  qth TEXT,
+  country TEXT,
+  gridsquare TEXT,
+  lat TEXT,
+  lon TEXT,
+  comment TEXT,
+  prop_mode TEXT,
+  sat_name TEXT,
+  tx_pwr TEXT,
+  my_sig TEXT,
+  sig TEXT,
+  state TEXT,
+  cq_zone TEXT,
+  itu_zone TEXT,
+  operator TEXT,
+  station_callsign TEXT NOT NULL,
+  station_gridsquare TEXT,
+  -- Contest fields
+  contest_id TEXT,
+  stx TEXT,
+  srx TEXT,
+  stx_string TEXT,
+  srx_string TEXT,
+  -- Metadata
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  deleted_at TIMESTAMPTZ
+);
+
+-- Platform credentials (encrypted, per-user)
+CREATE TABLE IF NOT EXISTS log_summit.platform_credentials (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  platform TEXT NOT NULL CHECK (platform IN ('qrz', 'clublog', 'eqsl')),
+  encrypted_data TEXT NOT NULL,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, platform)
+);
+
+-- Upload trackers (per-platform sync status per QSO)
+CREATE TABLE IF NOT EXISTS log_summit.upload_trackers (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  qso_id UUID NOT NULL REFERENCES log_summit.qsos(id) ON DELETE CASCADE,
+  platform TEXT NOT NULL CHECK (platform IN ('qrz', 'clublog', 'eqsl')),
+  remote_id TEXT,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'synced', 'error')),
+  error_message TEXT,
+  last_attempt TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(qso_id, platform)
+);
+
+-- Sync metadata
+CREATE TABLE IF NOT EXISTS log_summit.sync_metadata (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  sync_type TEXT NOT NULL CHECK (sync_type IN ('local_to_server', 'server_to_local')),
+  last_sync_timestamp TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(sync_type)
+);
+
+-- Enable RLS
+ALTER TABLE log_summit.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE log_summit.qsos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE log_summit.platform_credentials ENABLE ROW LEVEL SECURITY;
+ALTER TABLE log_summit.upload_trackers ENABLE ROW LEVEL SECURITY;
+
+-- Create RLS policies
+CREATE POLICY user_profiles ON log_summit.profiles
+  USING (id = auth.uid());
+
+CREATE POLICY user_qsos ON log_summit.qsos
+  USING (user_id = auth.uid());
+
+CREATE POLICY user_credentials ON log_summit.platform_credentials
+  USING (user_id = auth.uid());
+
+CREATE POLICY user_trackers ON log_summit.upload_trackers
+  USING (qso_id IN (SELECT id FROM log_summit.qsos WHERE user_id = auth.uid()));

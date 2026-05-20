@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:horizonqrz/utils/adif_parser.dart';
+import 'package:log_summit/utils/adif_parser.dart';
 
 void main() {
   group('AdifParser Tests', () {

@@ -1,13 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:xml/xml.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter/material.dart';
 
 class QrzXmlService {
   final Dio _dio = Dio(BaseOptions(baseUrl: 'https://xmldata.qrz.com/xml/current/'));
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   
   String? _sessionKey;
-  static const String agent = 'HorizonQRZ-v1.0';
+  static const String agent = 'LogSummit-v1.0';
 
   Future<String?> login(String username, String password) async {
     try {
@@ -85,6 +86,104 @@ class QrzXmlService {
       return null;
     } catch (e) {
       rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getAwards(String callsign) async {
+    if (_sessionKey == null) {
+      _sessionKey = await _secureStorage.read(key: 'qrz_session_key');
+    }
+
+    if (_sessionKey == null) {
+      final username = await _secureStorage.read(key: 'qrz_username');
+      final password = await _secureStorage.read(key: 'qrz_password');
+      if (username != null && password != null) {
+        await login(username, password);
+      } else {
+        throw Exception('No active session and no stored credentials');
+      }
+    }
+
+    try {
+      final response = await _dio.get('', queryParameters: {
+        's': _sessionKey,
+        'callsign': callsign,
+      });
+
+      final document = XmlDocument.parse(response.data);
+      
+      final awards = document.findAllElements('Awards');
+      if (awards.isEmpty) return null;
+
+      final awardsNode = awards.first;
+      final awardsList = awardsNode.findElements('Award');
+      if (awardsList.isEmpty) return null;
+
+      final awardsJson = awardsList.map((award) {
+        final title = award.findElements('title').firstOrNull?.innerText;
+        final subtitle = award.findElements('subtitle').firstOrNull?.innerText;
+        final unitLabel = award.findElements('unitLabel').firstOrNull?.innerText;
+        final current = int.tryParse(award.findElements('current').firstOrNull?.innerText ?? '0') ?? 0;
+        final total = int.tryParse(award.findElements('total').firstOrNull?.innerText ?? '0') ?? 0;
+        final completed = current >= total;
+        final accent = _getAccentColor(award.findElements('accent').firstOrNull?.innerText);
+
+        final stats = award.findElements('Stats').firstOrNull?.findElements('Stat');
+        if (stats == null || stats.isEmpty) {
+          final defaultStats = ['WORKED', 'CONFIRMED', 'VERIFIED'];
+          return {
+            'code': award.findElements('code').firstOrNull?.innerText ?? '',
+            'title': title ?? '',
+            'subtitle': subtitle ?? '',
+            'unitLabel': unitLabel ?? '',
+            'current': current,
+            'total': total,
+            'completed': completed,
+            'accent': accent,
+            'stats': defaultStats,
+            'labels': defaultStats,
+          };
+        }
+
+        final statsList = stats.map((stat) {
+          final label = stat.findElements('label').firstOrNull?.innerText ?? '';
+          final value = stat.findElements('value').firstOrNull?.innerText ?? '';
+          return [label, value];
+        }).toList();
+
+        final labels = statsList.map((pair) => pair[0]).toList();
+        final statsValues = statsList.map((pair) => pair[1]).toList();
+
+        return {
+          'code': award.findElements('code').firstOrNull?.innerText ?? '',
+          'title': title ?? '',
+          'subtitle': subtitle ?? '',
+          'unitLabel': unitLabel ?? '',
+          'current': current,
+          'total': total,
+          'completed': completed,
+          'accent': accent,
+          'stats': statsValues,
+          'labels': labels,
+        };
+      }).toList();
+
+      return {
+        'awards': awardsJson,
+        'callsign': callsign,
+      };
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Color _getAccentColor(String? hexString) {
+    if (hexString == null || hexString.isEmpty) return Colors.grey;
+    try {
+      final int colorInt = int.parse(hexString.replaceAll('#', ''), radix: 16);
+      return Color(colorInt);
+    } catch (_) {
+      return Colors.grey;
     }
   }
 }

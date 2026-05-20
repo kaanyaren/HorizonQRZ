@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
-import 'package:sizer/sizer.dart';
 import '../../database/app_database.dart';
 import '../theme.dart';
-import '../widgets/banner_ad_widget.dart';
 import '../widgets/instrument_card.dart';
+import '../../utils/distance.dart';
 
 class QsoDetailScreen extends StatelessWidget {
-  final Qso qso;
+  final LocalQso qso;
 
   const QsoDetailScreen({super.key, required this.qso});
 
@@ -48,32 +47,31 @@ class QsoDetailScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          const BannerAdWidget(),
           Expanded(
             child: ListView(
-              padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               children: [
                 _buildHeader(theme),
-                SizedBox(height: 2.h),
+                const SizedBox(height: 16),
                 
                 if (location != null) ...[
                   _buildMapCard(location),
-                  SizedBox(height: 2.h),
+                  const SizedBox(height: 16),
                 ],
 
                 _buildBasicInfoCard(theme),
-                SizedBox(height: 2.h),
+                const SizedBox(height: 16),
                 
                 _buildLocationCard(theme),
-                SizedBox(height: 2.h),
+                const SizedBox(height: 16),
 
                 if (qso.comment != null && qso.comment!.isNotEmpty) ...[
                   _buildCommentCard(theme),
-                  SizedBox(height: 2.h),
+                  const SizedBox(height: 16),
                 ],
 
                 _buildTechnicalFooter(theme),
-                SizedBox(height: 4.h),
+                const SizedBox(height: 32),
               ],
             ),
           ),
@@ -87,15 +85,17 @@ class QsoDetailScreen extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(qso.callsign, style: theme.textTheme.displayLarge?.copyWith(fontSize: 24.sp, color: AppTheme.primary, height: 1)),
-            Text(qso.name ?? 'Unknown Operator', style: theme.textTheme.bodyLarge?.copyWith(color: AppTheme.onSurfaceVariant)),
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(qso.callsign, style: theme.textTheme.displayLarge?.copyWith(fontSize: 24, color: AppTheme.primary, height: 1, overflow: TextOverflow.ellipsis)),
+              Text(qso.name ?? 'Unknown Operator', style: theme.textTheme.bodyLarge?.copyWith(color: AppTheme.onSurfaceVariant, overflow: TextOverflow.ellipsis)),
+            ],
+          ),
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 0.8.h),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             color: AppTheme.primary.withOpacity(0.1),
             borderRadius: BorderRadius.circular(4),
@@ -103,7 +103,7 @@ class QsoDetailScreen extends StatelessWidget {
           ),
           child: Text(
             DateFormat('yyyy-MM-dd HH:mm').format(qso.qsoDate.toUtc()) + ' UTC',
-            style: theme.textTheme.labelMono.copyWith(fontSize: 8.sp, fontWeight: FontWeight.bold, color: AppTheme.primary),
+            style: theme.textTheme.labelMono.copyWith(fontSize: 8, fontWeight: FontWeight.bold, color: AppTheme.primary),
           ),
         ),
       ],
@@ -115,7 +115,7 @@ class QsoDetailScreen extends StatelessWidget {
       padding: EdgeInsets.zero,
       accentColor: AppTheme.tertiary,
       child: SizedBox(
-        height: 25.h,
+        height: 200,
         child: FlutterMap(
           options: MapOptions(
             initialCenter: location,
@@ -149,13 +149,13 @@ class QsoDetailScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSectionHeader(theme, 'CONTACT SPECIFICATIONS'),
-          SizedBox(height: 2.h),
+          const SizedBox(height: 16),
           _buildInfoGrid([
             _GridItem('BAND', qso.band),
             _GridItem('MODE', qso.mode),
-            _GridItem('FREQ', (qso.freq == null || qso.freq!.isEmpty) ? '--' : '${qso.freq} MHz'),
+            _GridItem('FREQ', formatFreq(qso.freq)),
           ], theme),
-          Divider(height: 3.h),
+          Divider(height: 24),
           _buildInfoGrid([
             _GridItem('RST SENT', qso.rstSent ?? '--'),
             _GridItem('RST RCVD', qso.rstRcvd ?? '--'),
@@ -172,7 +172,7 @@ class QsoDetailScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSectionHeader(theme, 'LOCATION DATA'),
-          SizedBox(height: 2.h),
+          const SizedBox(height: 16),
           _buildDetailRow('COUNTRY', qso.country ?? 'Unknown', theme),
           _buildDetailRow('QTH (CITY)', qso.qth ?? 'Unknown', theme),
           _buildDetailRow('GRID', qso.gridsquare ?? 'Unknown', theme),
@@ -189,10 +189,10 @@ class QsoDetailScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSectionHeader(theme, 'OPERATOR NOTES'),
-          SizedBox(height: 1.5.h),
+          const SizedBox(height: 12),
           Text(
             qso.comment!,
-            style: theme.textTheme.bodyMedium?.copyWith(fontSize: 11.sp, height: 1.5),
+            style: theme.textTheme.bodyMedium?.copyWith(fontSize: 11, height: 1.5),
           ),
         ],
       ),
@@ -201,7 +201,7 @@ class QsoDetailScreen extends StatelessWidget {
 
   Widget _buildTechnicalFooter(ThemeData theme) {
     return Container(
-      padding: EdgeInsets.all(3.w),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppTheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(8),
@@ -210,8 +210,8 @@ class QsoDetailScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('QRZ LOG ID', style: theme.textTheme.labelMono.copyWith(fontSize: 8.sp, color: AppTheme.onSurfaceVariant)),
-          Text(qso.qrzLogid ?? 'PENDING SYNC', style: theme.textTheme.labelMono.copyWith(fontSize: 8.sp, fontWeight: FontWeight.bold, color: AppTheme.primary)),
+          Text('QRZ LOG ID', style: theme.textTheme.labelMono.copyWith(fontSize: 8, color: AppTheme.onSurfaceVariant)),
+          Text(qso.supabaseId.isNotEmpty ? qso.supabaseId : 'PENDING SYNC', style: theme.textTheme.labelMono.copyWith(fontSize: 8, fontWeight: FontWeight.bold, color: AppTheme.primary)),
         ],
       ),
     );
@@ -221,8 +221,8 @@ class QsoDetailScreen extends StatelessWidget {
     return Row(
       children: [
         Container(width: 3, height: 12, color: AppTheme.primary),
-        SizedBox(width: 2.w),
-        Text(title, style: theme.textTheme.labelLarge?.copyWith(fontSize: 8.sp, letterSpacing: 1.5, color: AppTheme.primary)),
+        const SizedBox(width: 8),
+        Text(title, style: theme.textTheme.labelLarge?.copyWith(fontSize: 8, letterSpacing: 1.5, color: AppTheme.primary)),
       ],
     );
   }
@@ -233,8 +233,8 @@ class QsoDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(item.label, style: theme.textTheme.labelMono.copyWith(fontSize: 7.sp, color: AppTheme.onSurfaceVariant.withOpacity(0.7))),
-            Text(item.value, style: theme.textTheme.labelMono.copyWith(fontSize: 12.sp, fontWeight: FontWeight.bold, color: AppTheme.onSurface)),
+            Text(item.label, style: theme.textTheme.labelMono.copyWith(fontSize: 7, color: AppTheme.onSurfaceVariant.withOpacity(0.7))),
+            Text(item.value, style: theme.textTheme.labelMono.copyWith(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.onSurface)),
           ],
         ),
       )).toList(),
@@ -243,12 +243,12 @@ class QsoDetailScreen extends StatelessWidget {
 
   Widget _buildDetailRow(String label, String value, ThemeData theme) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 0.8.h),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: theme.textTheme.labelMono.copyWith(fontSize: 8.sp, color: AppTheme.onSurfaceVariant)),
-          Text(value, style: theme.textTheme.bodyMedium?.copyWith(fontSize: 10.sp, fontWeight: FontWeight.w600)),
+          Text(label, style: theme.textTheme.labelMono.copyWith(fontSize: 8, color: AppTheme.onSurfaceVariant)),
+          Text(value, style: theme.textTheme.bodyMedium?.copyWith(fontSize: 10, fontWeight: FontWeight.w600)),
         ],
       ),
     );
